@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planificador de Lanzamiento — Club Geek</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    body.showing-result {
+      align-items: flex-start;
+      padding-top: 2.5rem;
+      padding-bottom: 3rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+      transition: max-width 0.3s ease;
+    }
+
+    .container.wide {
+      max-width: 720px;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header .badge {
+      display: inline-block;
+      background: #1E6FFF;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.85rem;
+      border-radius: 100px;
+      margin-bottom: 1rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0a0a0a;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+
+    .header h1 span { color: #1E6FFF; }
+
+    .header p {
+      color: #6b7280;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ── Card base ── */
+    .card {
+      background: #ffffff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 8px 40px rgba(30, 111, 255, 0.08);
+    }
+
+    /* ── Form ── */
+    .form-group { margin-bottom: 1.5rem; }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 0.5rem;
+    }
+
+    label .icon { font-size: 1rem; }
+
+    input[type="text"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: #111827;
+      background: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      outline: none;
+      appearance: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #1E6FFF;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(30, 111, 255, 0.1);
+    }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    /* radio pills — semanas */
+    .radio-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+    }
+
+    .radio-pill input[type="radio"] { display: none; }
+
+    .radio-pill label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.65rem 0.5rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      user-select: none;
+      gap: 0.1rem;
+      margin-bottom: 0;
+    }
+
+    .radio-pill label .num {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1;
+    }
+
+    .radio-pill input[type="radio"]:checked + label {
+      background: #1E6FFF;
+      border-color: #1E6FFF;
+      color: #ffffff;
+    }
+
+    .radio-pill input[type="radio"]:checked + label .num { color: #ffffff; }
+
+    .radio-pill label:hover { border-color: #1E6FFF; background: #eef4ff; }
+    .radio-pill input[type="radio"]:checked + label:hover { background: #1E6FFF; }
+
+    /* radio pills — red social */
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+
+    .social-pill input[type="radio"] { display: none; }
+
+    .social-pill label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 0.5rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      user-select: none;
+      gap: 0.3rem;
+      margin-bottom: 0;
+    }
+
+    .social-pill label .social-icon { font-size: 1.6rem; line-height: 1; }
+
+    .social-pill input[type="radio"]:checked + label {
+      border-color: #F5C518;
+      background: #fffbe6;
+      color: #92400e;
+      box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.2);
+    }
+
+    .social-pill label:hover { border-color: #F5C518; background: #fffbe6; }
+
+    /* divider */
+    .divider { height: 1px; background: #f3f4f6; margin: 1.8rem 0; }
+
+    /* submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: #1E6FFF;
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-submit:hover {
+      background: #155de0;
+      box-shadow: 0 6px 20px rgba(30, 111, 255, 0.35);
+    }
+
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit .accent { color: #F5C518; font-size: 1.1rem; }
+
+    .hint { font-size: 0.78rem; color: #9ca3af; margin-top: 0.35rem; }
+
+    /* ── RESULT SECTION ── */
+    .result-section { display: none; }
+    .result-section.visible { display: block; }
+
+    /* back button */
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: none;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #374151;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-back:hover { border-color: #1E6FFF; color: #1E6FFF; background: #eef4ff; }
+
+    /* result header */
+    .result-heading { margin-bottom: 1.5rem; }
+
+    .result-heading h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0a0a0a;
+      line-height: 1.25;
+      margin-bottom: 0.3rem;
+    }
+
+    .result-heading h2 span { color: #1E6FFF; }
+
+    .result-heading p { color: #6b7280; font-size: 0.9rem; }
+
+    /* summary card */
+    .summary-card {
+      background: #1E6FFF;
+      border-radius: 20px;
+      padding: 1.5rem 1.75rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 30px rgba(30, 111, 255, 0.3);
+    }
+
+    .summary-item {}
+
+    .summary-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 0.3rem;
+    }
+
+    .summary-value {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .summary-value.highlight { color: #F5C518; }
+
+    /* week card */
+    .week-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+
+    .week-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1.5px solid #e5e7eb;
+      background: var(--phase-bg, #f9fafb);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .week-meta {}
+
+    .week-number {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-bottom: 0.15rem;
+    }
+
+    .week-dates {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    .phase-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: var(--phase-color, #1E6FFF);
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    .week-body { padding: 1.25rem 1.5rem; }
+
+    .week-objetivo {
+      font-size: 0.88rem;
+      color: #374151;
+      line-height: 1.55;
+      padding: 0.85rem 1rem;
+      background: #f9fafb;
+      border-radius: 12px;
+      border-left: 3px solid var(--phase-color, #1E6FFF);
+      margin-bottom: 1.25rem;
+    }
+
+    .week-objetivo strong {
+      color: var(--phase-color, #1E6FFF);
+      font-weight: 700;
+    }
+
+    /* posts grid */
+    .posts-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+    }
+
+    .post-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      background: #ffffff;
+    }
+
+    .post-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.55rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .post-format {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--phase-color, #1E6FFF);
+      background: var(--phase-bg, #eef4ff);
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      border: 1px solid var(--phase-color, #1E6FFF);
+    }
+
+    .post-number {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #9ca3af;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .post-tema {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .post-hook {
+      font-size: 0.85rem;
+      color: #4b5563;
+      line-height: 1.55;
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      border-left: 2.5px solid #e5e7eb;
+      font-style: italic;
+    }
+
+    /* validation error */
+    .field-error {
+      font-size: 0.78rem;
+      color: #dc2626;
+      margin-top: 0.35rem;
+      display: none;
+    }
+
+    input.invalid, textarea.invalid {
+      border-color: #dc2626 !important;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08) !important;
+    }
+
+    @media (max-width: 560px) {
+      .card { padding: 1.75rem 1.25rem; }
+      .header h1 { font-size: 1.65rem; }
+      .summary-card { grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1.25rem; }
+      .week-body { padding: 1rem; }
+      .week-header { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="main-container">
+
+    <!-- ══ HEADER ══ -->
+    <div class="header" id="main-header">
+      <span class="badge">Club Geek</span>
+      <h1>Planificador de<br><span>Lanzamiento</span></h1>
+      <p>Crea tu estrategia de contenido semana a semana<br>para lanzar con impacto en redes sociales.</p>
+    </div>
+
+    <!-- ══ FORMULARIO ══ -->
+    <div id="form-section">
+      <div class="card">
+        <form id="launch-form" novalidate>
+
+          <div class="form-group">
+            <label for="product-name">
+              <span class="icon">🚀</span> Nombre del producto o servicio
+            </label>
+            <input type="text" id="product-name" name="product_name"
+              placeholder="Ej: Curso de Marketing Digital" required />
+            <p class="field-error" id="err-name">Escribe el nombre del producto.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="description">
+              <span class="icon">📝</span> Descripción breve
+            </label>
+            <textarea id="description" name="description"
+              placeholder="¿Qué es y para quién está dirigido? Ej: Un curso online para emprendedoras que quieren vender más en Instagram sin gastar en publicidad."
+              required></textarea>
+            <p class="hint">Cuanto más específico, mejor será tu plan de contenido.</p>
+            <p class="field-error" id="err-desc">Escribe una descripción breve.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="launch-date">
+              <span class="icon">📅</span> Fecha de lanzamiento
+            </label>
+            <input type="date" id="launch-date" name="launch_date" required />
+            <p class="field-error" id="err-date">Selecciona la fecha de lanzamiento.</p>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="form-group">
+            <label><span class="icon">⏳</span> Semanas de preventa</label>
+            <div class="radio-grid">
+              <div class="radio-pill">
+                <input type="radio" id="weeks-1" name="weeks" value="1" />
+                <label for="weeks-1"><span class="num">1</span>semana</label>
+              </div>
+              <div class="radio-pill">
+                <input type="radio" id="weeks-2" name="weeks" value="2" checked />
+                <label for="weeks-2"><span class="num">2</span>semanas</label>
+              </div>
+              <div class="radio-pill">
+                <input type="radio" id="weeks-3" name="weeks" value="3" />
+                <label for="weeks-3"><span class="num">3</span>semanas</label>
+              </div>
+              <div class="radio-pill">
+                <input type="radio" id="weeks-4" name="weeks" value="4" />
+                <label for="weeks-4"><span class="num">4</span>semanas</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><span class="icon">📲</span> Red social principal</label>
+            <div class="social-grid">
+              <div class="social-pill">
+                <input type="radio" id="social-instagram" name="social" value="instagram" checked />
+                <label for="social-instagram">
+                  <span class="social-icon">📸</span>Instagram
+                </label>
+              </div>
+              <div class="social-pill">
+                <input type="radio" id="social-tiktok" name="social" value="tiktok" />
+                <label for="social-tiktok">
+                  <span class="social-icon">🎵</span>TikTok
+                </label>
+              </div>
+              <div class="social-pill">
+                <input type="radio" id="social-facebook" name="social" value="facebook" />
+                <label for="social-facebook">
+                  <span class="social-icon">💬</span>Facebook
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <button type="submit" class="btn-submit">
+            <span class="accent">★</span> Generar Plan de Lanzamiento
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- ══ RESULTADO ══ -->
+    <div id="result-section" class="result-section"></div>
+
+  </div>
+
+  <script>
+  // ─────────────────────────────────────────────
+  //  CONFIGURACIÓN
+  // ─────────────────────────────────────────────
+
+  const FORMATOS = {
+    instagram: ['🎬 Reel', '🖼️ Carrusel', '⭕ Historia'],
+    tiktok:    ['🎬 Video', '📲 Dueto', '🔴 Directo'],
+    facebook:  ['🎬 Video', '📋 Publicación', '⭕ Historia']
+  };
+
+  // Colores y fondos por fase
+  const FASE_STYLES = {
+    expectativa: { color: '#1E6FFF', bg: '#eef4ff' },
+    deseo:       { color: '#7c3aed', bg: '#f5f3ff' },
+    urgencia:    { color: '#d97706', bg: '#fffbeb' },
+    cierre:      { color: '#059669', bg: '#ecfdf5' }
+  };
+
+  // Plantillas de posts por fase
+  // Reciben: nombre (string), descripcion (string), formatos (array 3 elementos)
+  const FASES = {
+    expectativa: {
+      nombre: 'Expectativa',
+      emoji: '👀',
+      objetivo: 'Generar curiosidad antes de revelar qué es exactamente el producto. El objetivo es que tu audiencia sienta que algo importante está por llegar.',
+      posts: (n, d, fmt) => [
+        {
+          formato: fmt[0],
+          tema: 'El problema que tu audiencia ya conoce',
+          hook: `"¿Por qué hay personas que llevan meses intentando lograrlo y siguen en el mismo lugar? Hoy te cuento algo que lo cambia todo. Algo viene."`
+        },
+        {
+          formato: fmt[1],
+          tema: `5 señales de que ${n} es exactamente para ti`,
+          hook: `"Si llevas tiempo buscando una solución para ${recortar(d, 65)}... este post es para ti. Lee hasta el final porque la número 3 te va a sorprender."`
+        },
+        {
+          formato: fmt[2],
+          tema: `Teaser: algo llega muy pronto`,
+          hook: `"Llevo semanas preparando algo que va a cambiar cómo funciona ${n}. 🤫 Activa las notificaciones para ser la primera en enterarte cuando lo revele."`
+        }
+      ]
+    },
+
+    deseo: {
+      nombre: 'Deseo',
+      emoji: '🔥',
+      objetivo: 'Mostrar el valor real de tu oferta. Tu audiencia debe ver el resultado posible y sentir que quiere tenerlo, no solo que lo necesita.',
+      posts: (n, d, fmt) => [
+        {
+          formato: fmt[0],
+          tema: `Qué lograrás con ${n}`,
+          hook: `"Esto es lo que pasa cuando alguien finalmente tiene acceso a ${n}: ${recortar(d, 80)}. Y tú puedes ser la próxima en experimentarlo."`
+        },
+        {
+          formato: fmt[1],
+          tema: `Por qué ${n} funciona cuando otras opciones no`,
+          hook: `"No es una solución genérica. Te explico exactamente qué hace diferente a ${n} y por qué da resultados reales donde otras alternativas fallan."`
+        },
+        {
+          formato: fmt[2],
+          tema: `Un vistazo al interior de ${n}`,
+          hook: `"Te muestro cómo se ve ${n} por dentro antes de que abra al público. Spoiler: es exactamente lo que necesitabas. 🎯 ¿Tienes preguntas? Escríbelas abajo."`
+        }
+      ]
+    },
+
+    urgencia: {
+      nombre: 'Urgencia',
+      emoji: '⏳',
+      objetivo: 'Crear sentido de urgencia real. Tu audiencia debe entender que esperar tiene un costo y que el acceso es limitado en tiempo.',
+      posts: (n, d, fmt) => [
+        {
+          formato: fmt[0],
+          tema: `Cuenta regresiva: ${n} abre muy pronto`,
+          hook: `"Faltan pocos días para que ${n} abra sus puertas. Una vez que cierre el lanzamiento, no sabemos cuándo vuelve a estar disponible. ¿Ya estás en la lista de espera?"`
+        },
+        {
+          formato: fmt[1],
+          tema: `Todo lo que incluye ${n}`,
+          hook: `"Para que no quede ninguna duda antes de que abra: esto es exactamente lo que recibes cuando accedes a ${n}. Sin letra pequeña, sin sorpresas."`
+        },
+        {
+          formato: fmt[2],
+          tema: `Recordatorio urgente`,
+          hook: `"⚡ ATENCIÓN: ${n} abre en muy pocos días. Enlace en bio para unirte a la lista y asegurar tu acceso antes que los demás. No te quedes fuera."`
+        }
+      ]
+    },
+
+    cierre: {
+      nombre: 'Cierre',
+      emoji: '🚀',
+      objetivo: 'Abrir ventas y convertir en acción inmediata el interés que acumulaste durante la preventa. Es el momento de ser directa y clara.',
+      posts: (n, d, fmt) => [
+        {
+          formato: fmt[0],
+          tema: `¡${n} ya está disponible!`,
+          hook: `"¡YA ESTÁ AQUÍ! 🎉 ${n} abrió sus puertas HOY. Llevo semanas preparando esto pensando en ti y por fin llegó el momento. Enlace en bio para acceder ahora."`
+        },
+        {
+          formato: fmt[1],
+          tema: `Cómo unirte a ${n} paso a paso`,
+          hook: `"Si has estado esperando ${n}, este es tu momento. Te explico cómo acceder en menos de 2 minutos. No lo dejes para después: el acceso es por tiempo limitado."`
+        },
+        {
+          formato: fmt[2],
+          tema: `Últimas horas de acceso a ${n}`,
+          hook: `"⏰ El acceso a ${n} cierra pronto. Una vez que cierre no habrá lista de espera. ¿Ya estás adentro? Si tienes dudas, escríbeme ahora mismo."`
+        }
+      ]
+    }
+  };
+
+  // Fases que se usan según número de semanas (siempre terminan en cierre)
+  const FASES_POR_SEMANAS = {
+    1: ['cierre'],
+    2: ['urgencia', 'cierre'],
+    3: ['deseo', 'urgencia', 'cierre'],
+    4: ['expectativa', 'deseo', 'urgencia', 'cierre']
+  };
+
+  // ─────────────────────────────────────────────
+  //  UTILIDADES
+  // ─────────────────────────────────────────────
+
+  function recortar(texto, max) {
+    if (texto.length <= max) return texto;
+    return texto.slice(0, max).trimEnd() + '…';
+  }
+
+  // Parsear fecha local desde YYYY-MM-DD sin desfase de zona horaria
+  function parsearFecha(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  // Sumar días a una fecha
+  function sumarDias(fecha, dias) {
+    const f = new Date(fecha);
+    f.setDate(f.getDate() + dias);
+    return f;
+  }
+
+  // Formatear fecha en español: "lunes 7 de abril"
+  function formatearFecha(fecha) {
+    const DIAS   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    const MESES  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    return `${DIAS[fecha.getDay()]} ${fecha.getDate()} de ${MESES[fecha.getMonth()]}`;
+  }
+
+  // Capitalizar primera letra
+  function capitalizar(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  const SOCIAL_LABELS = {
+    instagram: 'Instagram',
+    tiktok:    'TikTok',
+    facebook:  'Facebook'
+  };
+
+  // ─────────────────────────────────────────────
+  //  GENERADOR DE PLAN
+  // ─────────────────────────────────────────────
+
+  function generarPlan(datos) {
+    const { nombre, descripcion, fechaLanzamiento, semanas, social } = datos;
+    const formatos = FORMATOS[social];
+    const faseIds  = FASES_POR_SEMANAS[semanas];
+    const fechaLanz = parsearFecha(fechaLanzamiento);
+    const fechaIniPreventa = sumarDias(fechaLanz, -(semanas * 7));
+
+    // Construir semanas con fechas
+    const semanasPlan = faseIds.map((faseId, idx) => {
+      const inicioSemana = sumarDias(fechaIniPreventa, idx * 7);
+      const finSemana    = sumarDias(inicioSemana, 6);
+      const fase         = FASES[faseId];
+      const posts        = fase.posts(nombre, descripcion, formatos);
+      return { numero: idx + 1, faseId, fase, inicioSemana, finSemana, posts };
+    });
+
+    return { semanasPlan, fechaIniPreventa, fechaLanz, formatos };
+  }
+
+  // ─────────────────────────────────────────────
+  //  RENDER HTML
+  // ─────────────────────────────────────────────
+
+  function renderResultado(datos, plan) {
+    const { nombre, semanas, social } = datos;
+    const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
+    const totalPosts = semanas * 3;
+
+    const summaryHTML = `
+      <div class="summary-card">
+        <div class="summary-item">
+          <span class="summary-label">Inicio de preventa</span>
+          <span class="summary-value">${capitalizar(formatearFecha(fechaIniPreventa))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Día de lanzamiento</span>
+          <span class="summary-value highlight">${capitalizar(formatearFecha(fechaLanz))}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Semanas de preventa</span>
+          <span class="summary-value">${semanas} ${semanas === 1 ? 'semana' : 'semanas'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Total de posts sugeridos</span>
+          <span class="summary-value">${totalPosts} posts</span>
+        </div>
+      </div>
+    `;
+
+    const semanasHTML = semanasPlan.map(s => {
+      const style = FASE_STYLES[s.faseId];
+
+      const postsHTML = s.posts.map((post, pi) => `
+        <div class="post-card" style="--phase-color:${style.color}; --phase-bg:${style.bg}">
+          <div class="post-top">
+            <span class="post-format">${post.formato}</span>
+            <span class="post-number">Post ${pi + 1}</span>
+          </div>
+          <div class="post-tema">${post.tema}</div>
+          <div class="post-hook">${post.hook}</div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="week-card"
+             style="--phase-color:${style.color}; --phase-bg:${style.bg}">
+          <div class="week-header" style="background:${style.bg}">
+            <div class="week-meta">
+              <span class="week-number">Semana ${s.numero} de ${semanasPlan.length}</span>
+              <span class="week-dates">
+                ${capitalizar(formatearFecha(s.inicioSemana))} — ${capitalizar(formatearFecha(s.finSemana))}
+              </span>
+            </div>
+            <div class="phase-badge" style="background:${style.color}">
+              ${s.fase.emoji} ${s.fase.nombre}
+            </div>
+          </div>
+          <div class="week-body" style="--phase-color:${style.color}">
+            <div class="week-objetivo" style="border-color:${style.color}">
+              <strong style="color:${style.color}">Objetivo de esta semana:</strong>
+              ${s.fase.objetivo}
+            </div>
+            <div class="posts-grid">
+              ${postsHTML}
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <button class="btn-back" id="btn-back">← Editar datos</button>
+      <div class="result-heading">
+        <h2>Plan de lanzamiento para<br><span>${nombre}</span></h2>
+        <p>Estrategia para ${SOCIAL_LABELS[social]} · ${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${totalPosts} posts sugeridos</p>
+      </div>
+      ${summaryHTML}
+      ${semanasHTML}
+    `;
+  }
+
+  // ─────────────────────────────────────────────
+  //  VALIDACIÓN
+  // ─────────────────────────────────────────────
+
+  function validarFormulario() {
+    let valido = true;
+
+    const nombre = document.getElementById('product-name');
+    const desc   = document.getElementById('description');
+    const fecha  = document.getElementById('launch-date');
+
+    // Limpiar errores previos
+    [nombre, desc, fecha].forEach(el => {
+      el.classList.remove('invalid');
+    });
+    document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
+
+    if (!nombre.value.trim()) {
+      nombre.classList.add('invalid');
+      document.getElementById('err-name').style.display = 'block';
+      valido = false;
+    }
+    if (!desc.value.trim()) {
+      desc.classList.add('invalid');
+      document.getElementById('err-desc').style.display = 'block';
+      valido = false;
+    }
+    if (!fecha.value) {
+      fecha.classList.add('invalid');
+      document.getElementById('err-date').style.display = 'block';
+      valido = false;
+    }
+
+    return valido;
+  }
+
+  // ─────────────────────────────────────────────
+  //  MOSTRAR / OCULTAR SECCIONES
+  // ─────────────────────────────────────────────
+
+  function mostrarResultado(html) {
+    const formSection   = document.getElementById('form-section');
+    const resultSection = document.getElementById('result-section');
+    const header        = document.getElementById('main-header');
+    const container     = document.getElementById('main-container');
+
+    resultSection.innerHTML = html;
+    resultSection.classList.add('visible');
+    formSection.style.display = 'none';
+    header.style.display = 'none';
+    container.classList.add('wide');
+    document.body.classList.add('showing-result');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Botón "Editar datos"
+    document.getElementById('btn-back').addEventListener('click', () => {
+      resultSection.classList.remove('visible');
+      resultSection.innerHTML = '';
+      formSection.style.display = 'block';
+      header.style.display = 'block';
+      container.classList.remove('wide');
+      document.body.classList.remove('showing-result');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  // ─────────────────────────────────────────────
+  //  EVENT LISTENER
+  // ─────────────────────────────────────────────
+
+  document.getElementById('launch-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    if (!validarFormulario()) return;
+
+    const datos = {
+      nombre:          document.getElementById('product-name').value.trim(),
+      descripcion:     document.getElementById('description').value.trim(),
+      fechaLanzamiento: document.getElementById('launch-date').value,
+      semanas:         parseInt(document.querySelector('input[name="weeks"]:checked').value, 10),
+      social:          document.querySelector('input[name="social"]:checked').value
+    };
+
+    const plan = generarPlan(datos);
+    const html = renderResultado(datos, plan);
+    mostrarResultado(html);
+  });
+
+  // Limpiar estado invalid en tiempo real
+  ['product-name', 'description', 'launch-date'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => {
+      el.classList.remove('invalid');
+      const errId = { 'product-name': 'err-name', 'description': 'err-desc', 'launch-date': 'err-date' }[id];
+      if (errId) document.getElementById(errId).style.display = 'none';
+    });
+  });
+  </script>
+
+</body>
+</html>
