@@ -242,6 +242,125 @@
 
     .hint { font-size: 0.78rem; color: #9ca3af; margin-top: 0.35rem; }
 
+    /* radio pills — contenido */
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+
+    .content-pill input[type="radio"] { display: none; }
+
+    .content-pill label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 0.5rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      user-select: none;
+      gap: 0.3rem;
+      margin-bottom: 0;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .content-pill label .content-icon { font-size: 1.5rem; line-height: 1; }
+
+    .content-pill input[type="radio"]:checked + label {
+      background: #eef4ff;
+      border-color: #1E6FFF;
+      color: #1E6FFF;
+      box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.15);
+    }
+
+    .content-pill label:hover { border-color: #1E6FFF; background: #eef4ff; }
+
+    /* stories info box */
+    .stories-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding: 0.65rem 1rem;
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #166534;
+    }
+
+    /* historias section en resultado */
+    .historias-section {
+      margin-top: 1.25rem;
+      border: 1.5px solid #bbf7d0;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .historias-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1rem;
+      background: #f0fdf4;
+      border-bottom: 1.5px solid #bbf7d0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #166534;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .historias-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .historia-item {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 0.75rem;
+      align-items: start;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid #f0fdf4;
+    }
+
+    .historia-item:last-child { border-bottom: none; }
+
+    .historia-dia {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #166534;
+      background: #dcfce7;
+      border-radius: 6px;
+      padding: 0.2rem 0.4rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .historia-tipo {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #059669;
+      margin-bottom: 0.15rem;
+    }
+
+    .historia-sug {
+      font-size: 0.82rem;
+      color: #374151;
+      line-height: 1.45;
+    }
+
     /* ── RESULT SECTION ── */
     .result-section { display: none; }
     .result-section.visible { display: block; }
@@ -569,6 +688,7 @@
             </label>
             <input type="date" id="launch-date" name="launch_date" required />
             <p class="field-error" id="err-date">Selecciona la fecha de lanzamiento.</p>
+            <p class="field-error" id="err-date-pasada">La fecha seleccionada ya pasó, por favor elige una fecha futura.</p>
           </div>
 
           <div class="divider"></div>
@@ -621,6 +741,51 @@
 
           <div class="divider"></div>
 
+          <div class="form-group">
+            <label><span class="icon">📅</span> Frecuencia de publicación</label>
+            <div class="radio-grid">
+              <div class="radio-pill">
+                <input type="radio" id="freq-2" name="frecuencia" value="2" checked />
+                <label for="freq-2"><span class="num">2</span>por semana</label>
+              </div>
+              <div class="radio-pill">
+                <input type="radio" id="freq-3" name="frecuencia" value="3" />
+                <label for="freq-3"><span class="num">3</span>por semana</label>
+              </div>
+              <div class="radio-pill">
+                <input type="radio" id="freq-4" name="frecuencia" value="4" />
+                <label for="freq-4"><span class="num">4</span>por semana</label>
+              </div>
+              <div class="radio-pill">
+                <input type="radio" id="freq-5" name="frecuencia" value="5" />
+                <label for="freq-5"><span class="num">5</span>por semana</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><span class="icon">🎬</span> Tipo de contenido preferido</label>
+            <div class="content-grid">
+              <div class="content-pill">
+                <input type="radio" id="tipo-reels" name="tipo_contenido" value="reels" checked />
+                <label for="tipo-reels"><span class="content-icon">🎬</span>Solo Reels</label>
+              </div>
+              <div class="content-pill">
+                <input type="radio" id="tipo-carruseles" name="tipo_contenido" value="carruseles" />
+                <label for="tipo-carruseles"><span class="content-icon">🖼️</span>Solo Carruseles</label>
+              </div>
+              <div class="content-pill">
+                <input type="radio" id="tipo-combinado" name="tipo_contenido" value="combinado" />
+                <label for="tipo-combinado"><span class="content-icon">✨</span>Reels y<br>Carruseles</label>
+              </div>
+            </div>
+            <div class="stories-info">
+              ⭕ Las historias son diarias y van incluidas en tu plan
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
           <button type="submit" class="btn-submit">
             <span class="accent">★</span> Generar Plan de Lanzamiento
           </button>
@@ -639,10 +804,17 @@
   //  CONFIGURACIÓN
   // ─────────────────────────────────────────────
 
-  const FORMATOS = {
-    instagram: ['🎬 Reel', '🖼️ Carrusel', '⭕ Historia'],
-    tiktok:    ['🎬 Video', '📲 Dueto', '🔴 Directo'],
-    facebook:  ['🎬 Video', '📋 Publicación', '⭕ Historia']
+  // Formato según tipo de contenido elegido (índice del post en la semana)
+  function getFormato(tipoContenido, idx) {
+    if (tipoContenido === 'reels')      return '🎬 Reel';
+    if (tipoContenido === 'carruseles') return '🖼️ Carrusel';
+    return idx % 2 === 0 ? '🎬 Reel' : '🖼️ Carrusel'; // combinado: alternado
+  }
+
+  const TIPO_LABELS = {
+    reels:      'Solo Reels',
+    carruseles: 'Solo Carruseles',
+    combinado:  'Reels y Carruseles'
   };
 
   // Colores y fondos por fase
@@ -653,29 +825,43 @@
     cierre:      { color: '#059669', bg: '#ecfdf5' }
   };
 
-  // Plantillas de posts por fase
-  // Reciben: nombre (string), descripcion (string), formatos (array 3 elementos)
+  // Plantillas de posts por fase (hasta 5 por semana, sin Historia — se genera aparte)
+  // Reciben: nombre (string), descripcion (string)
   const FASES = {
     expectativa: {
       nombre: 'Expectativa',
       emoji: '👀',
       objetivo: 'Generar curiosidad antes de revelar qué es exactamente el producto. El objetivo es que tu audiencia sienta que algo importante está por llegar.',
-      posts: (n, d, fmt) => [
+      posts: (n, d) => [
         {
-          formato: fmt[0],
           tema: 'El problema que tu audiencia ya conoce',
           hook: `"¿Por qué hay personas que llevan meses intentando lograrlo y siguen en el mismo lugar? Hoy te cuento algo que lo cambia todo. Algo viene."`
         },
         {
-          formato: fmt[1],
           tema: `5 señales de que ${n} es exactamente para ti`,
           hook: `"Si llevas tiempo buscando una solución para ${recortar(d, 65)}... este post es para ti. Lee hasta el final porque la número 3 te va a sorprender."`
         },
         {
-          formato: fmt[2],
-          tema: `Teaser: algo llega muy pronto`,
-          hook: `"Llevo semanas preparando algo que va a cambiar cómo funciona ${n}. 🤫 Activa las notificaciones para ser la primera en enterarte cuando lo revele."`
+          tema: 'El error más común que comete tu audiencia',
+          hook: `"La mayoría lo está haciendo mal y ni siquiera lo saben. Hoy te cuento cuál es el error número uno y cómo evitarlo. (Y sí, tiene solución.)"`
+        },
+        {
+          tema: `La transformación que hace posible ${n}`,
+          hook: `"Imagina cómo sería tu vida si este problema ya no existiera. Eso es exactamente lo que viene. Guarda este post para cuando lo anuncie oficialmente."`
+        },
+        {
+          tema: '¿Por qué nada ha funcionado hasta ahora?',
+          hook: `"No es falta de esfuerzo. Es que nadie te había dado las herramientas correctas. Eso está a punto de cambiar. 🤫 Activa las notificaciones."`
         }
+      ],
+      historias: (n) => [
+        { dia: 'Día 1', tipo: '🗳️ Encuesta', sug: `"¿Cuál es tu mayor reto con [tema]?" — Crea un poll con dos opciones que tu audiencia sienta muy suyas.` },
+        { dia: 'Día 2', tipo: '💬 Pregunta', sug: `Caja de preguntas: "¿Qué quisieras aprender o mejorar en las próximas semanas?"` },
+        { dia: 'Día 3', tipo: '🎬 Detrás de escena', sug: `Comparte un vistazo de lo que estás preparando sin revelar exactamente qué es. Genera intriga.` },
+        { dia: 'Día 4', tipo: '🗳️ Poll', sug: `"¿Te pasa esto?" con una situación que tu cliente ideal vive a diario. Genera identificación.` },
+        { dia: 'Día 5', tipo: '💡 Tip rápido', sug: `Un mini-consejo relacionado con el problema que soluciona ${n}. Corto, directo, accionable.` },
+        { dia: 'Día 6', tipo: '⏳ Cuenta regresiva', sug: `Usa el sticker de cuenta regresiva: "Algo llega muy pronto. ¿Estás lista?"` },
+        { dia: 'Día 7', tipo: '📣 Teaser', sug: `"Mañana lo cuento todo." Cierra la semana generando expectativa del post principal de la próxima semana.` }
       ]
     },
 
@@ -683,22 +869,36 @@
       nombre: 'Deseo',
       emoji: '🔥',
       objetivo: 'Mostrar el valor real de tu oferta. Tu audiencia debe ver el resultado posible y sentir que quiere tenerlo, no solo que lo necesita.',
-      posts: (n, d, fmt) => [
+      posts: (n, d) => [
         {
-          formato: fmt[0],
           tema: `Qué lograrás con ${n}`,
           hook: `"Esto es lo que pasa cuando alguien finalmente tiene acceso a ${n}: ${recortar(d, 80)}. Y tú puedes ser la próxima en experimentarlo."`
         },
         {
-          formato: fmt[1],
           tema: `Por qué ${n} funciona cuando otras opciones no`,
           hook: `"No es una solución genérica. Te explico exactamente qué hace diferente a ${n} y por qué da resultados reales donde otras alternativas fallan."`
         },
         {
-          formato: fmt[2],
           tema: `Un vistazo al interior de ${n}`,
-          hook: `"Te muestro cómo se ve ${n} por dentro antes de que abra al público. Spoiler: es exactamente lo que necesitabas. 🎯 ¿Tienes preguntas? Escríbelas abajo."`
+          hook: `"Te muestro cómo se ve ${n} por dentro antes de que abra al público. Spoiler: es exactamente lo que necesitabas. 🎯"`
+        },
+        {
+          tema: 'Resultados reales: esto es lo que cambia',
+          hook: `"Cuando tienes acceso a las herramientas correctas, todo cambia. Esto es lo que logran quienes trabajan con ${n}. ¿Podrías ser la próxima?"`
+        },
+        {
+          tema: `Los 3 pilares de ${n} que lo hacen diferente`,
+          hook: `"No es magia. Es método. Te explico los 3 pilares que hacen que ${n} funcione donde otras opciones solo dan resultados temporales."`
         }
+      ],
+      historias: (n) => [
+        { dia: 'Día 1', tipo: '💬 Testimonio', sug: `Comparte una frase o resultado de alguien que ya vivió esta transformación. Si no tienes, usa un escenario ideal.` },
+        { dia: 'Día 2', tipo: '🗳️ Encuesta', sug: `"¿Cuál de estos resultados te gustaría lograr?" — dos opciones relacionadas con los beneficios de ${n}.` },
+        { dia: 'Día 3', tipo: '🎬 Detrás de escena', sug: `Muestra el proceso de creación de ${n}. La gente compra lo que ve nacer.` },
+        { dia: 'Día 4', tipo: '💡 Tip de valor', sug: `Un consejo profundo relacionado con ${n}. Que quien lo aplique sienta que ya le estás cambiando algo.` },
+        { dia: 'Día 5', tipo: '❓ Preguntas frecuentes', sug: `Responde la pregunta más común que reciben sobre ${n}. Genera confianza y aclara objeciones.` },
+        { dia: 'Día 6', tipo: '🔖 Guarda esto', sug: `"Guarda esta Historia porque pronto necesitarás esta información." Comparte un dato clave sobre ${n}.` },
+        { dia: 'Día 7', tipo: '🔥 Avance', sug: `"Esta semana viene algo importante sobre ${n}. No te lo pierdas." Prepara a tu audiencia para la fase de urgencia.` }
       ]
     },
 
@@ -706,22 +906,36 @@
       nombre: 'Urgencia',
       emoji: '⏳',
       objetivo: 'Crear sentido de urgencia real. Tu audiencia debe entender que esperar tiene un costo y que el acceso es limitado en tiempo.',
-      posts: (n, d, fmt) => [
+      posts: (n, d) => [
         {
-          formato: fmt[0],
           tema: `Cuenta regresiva: ${n} abre muy pronto`,
           hook: `"Faltan pocos días para que ${n} abra sus puertas. Una vez que cierre el lanzamiento, no sabemos cuándo vuelve a estar disponible. ¿Ya estás en la lista de espera?"`
         },
         {
-          formato: fmt[1],
           tema: `Todo lo que incluye ${n}`,
           hook: `"Para que no quede ninguna duda antes de que abra: esto es exactamente lo que recibes cuando accedes a ${n}. Sin letra pequeña, sin sorpresas."`
         },
         {
-          formato: fmt[2],
-          tema: `Recordatorio urgente`,
-          hook: `"⚡ ATENCIÓN: ${n} abre en muy pocos días. Enlace en bio para unirte a la lista y asegurar tu acceso antes que los demás. No te quedes fuera."`
+          tema: `¿Vale la pena ${n}? Te lo digo sin filtros`,
+          hook: `"Sé que tienes dudas. Y está bien. Hoy te respondo las 3 preguntas más honestas que me han hecho sobre ${n}. Sin marketing, solo la verdad."`
+        },
+        {
+          tema: `Lo que cambia cuando entras a ${n}`,
+          hook: `"No es solo el contenido. Es el antes y el después. Esto es lo que cambia concretamente en tu vida cuando accedes a ${n}. ¿Estás lista para eso?"`
+        },
+        {
+          tema: 'Última oportunidad de preguntar antes del lanzamiento',
+          hook: `"El lanzamiento de ${n} está a días. Antes de que abra, quiero responder tus dudas. Escríbeme lo que quieras saber. Sin compromiso."`
         }
+      ],
+      historias: (n) => [
+        { dia: 'Día 1', tipo: '⏳ Cuenta regresiva', sug: `Sticker de countdown: "Faltan X días para que ${n} abra." Actualízalo cada día.` },
+        { dia: 'Día 2', tipo: '❓ Resuelve objeciones', sug: `"¿Tienes dudas sobre ${n}? Escríbelas aquí." Caja de preguntas para responder en tiempo real.` },
+        { dia: 'Día 3', tipo: '🗳️ Encuesta de intención', sug: `"¿Estás pensando en unirte a ${n}?" — Sí, estoy casi segura / Aún tengo dudas.` },
+        { dia: 'Día 4', tipo: '💬 Responde en vivo', sug: `Responde una pregunta frecuente sobre ${n} en formato de texto en Historia. Claro y directo.` },
+        { dia: 'Día 5', tipo: '🔖 Recordatorio', sug: `"Enlace en bio para unirte a la lista de espera de ${n}. Los primeros tendrán [beneficio especial]."` },
+        { dia: 'Día 6', tipo: '🔥 Urgencia', sug: `"Mañana abre ${n}. ¿Ya estás lista?" Usa sticker de cuenta regresiva y enlace en bio.` },
+        { dia: 'Día 7', tipo: '📣 Último aviso', sug: `"MAÑANA ES EL DÍA. ${n} abre sus puertas. Enlace en bio para asegurar tu acceso desde el primer minuto."` }
       ]
     },
 
@@ -729,22 +943,36 @@
       nombre: 'Cierre',
       emoji: '🚀',
       objetivo: 'Abrir ventas y convertir en acción inmediata el interés que acumulaste durante la preventa. Es el momento de ser directa y clara.',
-      posts: (n, d, fmt) => [
+      posts: (n, d) => [
         {
-          formato: fmt[0],
           tema: `¡${n} ya está disponible!`,
           hook: `"¡YA ESTÁ AQUÍ! 🎉 ${n} abrió sus puertas HOY. Llevo semanas preparando esto pensando en ti y por fin llegó el momento. Enlace en bio para acceder ahora."`
         },
         {
-          formato: fmt[1],
           tema: `Cómo unirte a ${n} paso a paso`,
           hook: `"Si has estado esperando ${n}, este es tu momento. Te explico cómo acceder en menos de 2 minutos. No lo dejes para después: el acceso es por tiempo limitado."`
         },
         {
-          formato: fmt[2],
+          tema: `Qué pasa después de unirte a ${n}`,
+          hook: `"Una vez que accedes a ${n}, esto es lo que ocurre: [paso 1], [paso 2], [paso 3]. Sin complicaciones. Sin perder tiempo. Solo resultados."`
+        },
+        {
+          tema: `Por qué hoy es el mejor momento para unirte`,
+          hook: `"Hay personas que llevan meses esperando el momento perfecto. El momento perfecto es ahora. Te cuento por qué esperar te está costando más de lo que crees."`
+        },
+        {
           tema: `Últimas horas de acceso a ${n}`,
           hook: `"⏰ El acceso a ${n} cierra pronto. Una vez que cierre no habrá lista de espera. ¿Ya estás adentro? Si tienes dudas, escríbeme ahora mismo."`
         }
+      ],
+      historias: (n) => [
+        { dia: 'Día 1', tipo: '🎉 Anuncio', sug: `"¡ABRIÓ! ${n} ya está disponible. Enlace en bio." Usa colores llamativos y el sticker de enlace directo.` },
+        { dia: 'Día 2', tipo: '📲 Tutorial', sug: `Muestra el proceso de compra/acceso en pantalla. Que sea súper fácil de seguir. Máximo 4 pasos.` },
+        { dia: 'Día 3', tipo: '💬 Testimonios en tiempo real', sug: `Comparte reacciones de quienes ya accedieron a ${n}. La prueba social cierra ventas.` },
+        { dia: 'Día 4', tipo: '❓ FAQ exprés', sug: `Responde las 3 preguntas más frecuentes sobre ${n} en Stories rápidas. Resuelve el último freno.` },
+        { dia: 'Día 5', tipo: '⏳ Urgencia real', sug: `"Quedan [X] horas / plazas para acceder a ${n}. Después de eso, cerramos." Sticker de countdown.` },
+        { dia: 'Día 6', tipo: '🔥 Penúltimo aviso', sug: `"Mañana cierra ${n}. Si estás esperando una señal, esta es la señal." Enlace directo en bio.` },
+        { dia: 'Día 7', tipo: '🚪 Cierre', sug: `"HOY es el último día para acceder a ${n}. A las [hora] cerramos. Enlace en bio. Sin excusas. 💙"` }
       ]
     }
   };
@@ -802,22 +1030,27 @@
   // ─────────────────────────────────────────────
 
   function generarPlan(datos) {
-    const { nombre, descripcion, fechaLanzamiento, semanas, social } = datos;
-    const formatos = FORMATOS[social];
+    const { nombre, descripcion, fechaLanzamiento, semanas, frecuencia, tipoContenido } = datos;
     const faseIds  = FASES_POR_SEMANAS[semanas];
     const fechaLanz = parsearFecha(fechaLanzamiento);
-    const fechaIniPreventa = sumarDias(fechaLanz, -(semanas * 7));
+    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+    const calculada = sumarDias(fechaLanz, -(semanas * 7));
+    const fechaIniPreventa = calculada < hoy ? hoy : calculada;
 
     // Construir semanas con fechas
     const semanasPlan = faseIds.map((faseId, idx) => {
       const inicioSemana = sumarDias(fechaIniPreventa, idx * 7);
       const finSemana    = sumarDias(inicioSemana, 6);
       const fase         = FASES[faseId];
-      const posts        = fase.posts(nombre, descripcion, formatos);
-      return { numero: idx + 1, faseId, fase, inicioSemana, finSemana, posts };
+      // Tomar solo N posts según frecuencia y asignar formato según tipo de contenido
+      const posts = fase.posts(nombre, descripcion)
+        .slice(0, frecuencia)
+        .map((post, i) => ({ ...post, formato: getFormato(tipoContenido, i) }));
+      const historias = fase.historias(nombre);
+      return { numero: idx + 1, faseId, fase, inicioSemana, finSemana, posts, historias };
     });
 
-    return { semanasPlan, fechaIniPreventa, fechaLanz, formatos };
+    return { semanasPlan, fechaIniPreventa, fechaLanz };
   }
 
   // ─────────────────────────────────────────────
@@ -825,9 +1058,9 @@
   // ─────────────────────────────────────────────
 
   function renderResultado(datos, plan) {
-    const { nombre, semanas, social } = datos;
+    const { nombre, semanas, social, frecuencia, tipoContenido } = datos;
     const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
-    const totalPosts = semanas * 3;
+    const totalPosts = semanas * frecuencia;
 
     const summaryHTML = `
       <div class="summary-card">
@@ -840,12 +1073,12 @@
           <span class="summary-value highlight">${capitalizar(formatearFecha(fechaLanz))}</span>
         </div>
         <div class="summary-item">
-          <span class="summary-label">Semanas de preventa</span>
-          <span class="summary-value">${semanas} ${semanas === 1 ? 'semana' : 'semanas'}</span>
+          <span class="summary-label">Publicaciones por semana</span>
+          <span class="summary-value">${frecuencia} posts · ${TIPO_LABELS[tipoContenido]}</span>
         </div>
         <div class="summary-item">
           <span class="summary-label">Total de posts sugeridos</span>
-          <span class="summary-value">${totalPosts} posts</span>
+          <span class="summary-value">${totalPosts} posts + Historias diarias ⭕</span>
         </div>
       </div>
     `;
@@ -861,6 +1094,16 @@
           </div>
           <div class="post-tema">${post.tema}</div>
           <div class="post-hook">${post.hook}</div>
+        </div>
+      `).join('');
+
+      const historiasHTML = s.historias.map(h => `
+        <div class="historia-item">
+          <span class="historia-dia">${h.dia}</span>
+          <div>
+            <div class="historia-tipo">${h.tipo}</div>
+            <div class="historia-sug">${h.sug}</div>
+          </div>
         </div>
       `).join('');
 
@@ -886,6 +1129,10 @@
             <div class="posts-grid">
               ${postsHTML}
             </div>
+            <div class="historias-section">
+              <div class="historias-header">⭕ Historias diarias — sugerencias para esta semana</div>
+              <div class="historias-grid">${historiasHTML}</div>
+            </div>
           </div>
         </div>
       `;
@@ -895,7 +1142,7 @@
       <button class="btn-back" id="btn-back">← Editar datos</button>
       <div class="result-heading">
         <h2>Plan de lanzamiento para<br><span>${nombre}</span></h2>
-        <p>Estrategia para ${SOCIAL_LABELS[social]} · ${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${totalPosts} posts sugeridos</p>
+        <p>${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${frecuencia} posts/semana · ${TIPO_LABELS[tipoContenido]} + Historias diarias</p>
       </div>
       ${summaryHTML}
       ${semanasHTML}
@@ -909,7 +1156,7 @@
   // ─────────────────────────────────────────────
 
   function generarTextoPlano(datos, plan) {
-    const { nombre, descripcion, semanas, social } = datos;
+    const { nombre, descripcion, semanas, social, frecuencia, tipoContenido } = datos;
     const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
     const sep  = '═'.repeat(48);
     const sep2 = '─'.repeat(48);
@@ -918,13 +1165,14 @@
       sep,
       `PLAN DE LANZAMIENTO: ${nombre.toUpperCase()}`,
       sep,
-      `Producto:          ${nombre}`,
-      `Descripción:       ${descripcion}`,
-      `Red social:        ${SOCIAL_LABELS[social]}`,
-      `Semanas preventa:  ${semanas}`,
-      `Inicio preventa:   ${capitalizar(formatearFecha(fechaIniPreventa))}`,
-      `Día lanzamiento:   ${capitalizar(formatearFecha(fechaLanz))}`,
-      `Posts sugeridos:   ${semanas * 3}`,
+      `Producto:            ${nombre}`,
+      `Descripción:         ${descripcion}`,
+      `Semanas preventa:    ${semanas}`,
+      `Publicaciones/semana: ${frecuencia} (${TIPO_LABELS[tipoContenido]})`,
+      `Historias:           Diarias (incluidas en el plan)`,
+      `Inicio preventa:     ${capitalizar(formatearFecha(fechaIniPreventa))}`,
+      `Día lanzamiento:     ${capitalizar(formatearFecha(fechaLanz))}`,
+      `Posts sugeridos:     ${semanas * frecuencia} + Historias diarias`,
       ''
     ];
 
@@ -941,6 +1189,14 @@
         lineas.push(`POST ${pi + 1}  ·  ${post.formato}`);
         lineas.push(`Tema: ${post.tema}`);
         lineas.push(`Hook: ${post.hook}`);
+        lineas.push('');
+      });
+
+      lineas.push(`${sep2}`);
+      lineas.push(`⭕ HISTORIAS DIARIAS — SUGERENCIAS`);
+      s.historias.forEach(h => {
+        lineas.push(`  ${h.dia} · ${h.tipo}`);
+        lineas.push(`  ${h.sug}`);
         lineas.push('');
       });
     });
@@ -983,6 +1239,16 @@
       fecha.classList.add('invalid');
       document.getElementById('err-date').style.display = 'block';
       valido = false;
+    } else {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      const [y, m, d] = fecha.value.split('-').map(Number);
+      const fechaElegida = new Date(y, m - 1, d);
+      if (fechaElegida < hoy) {
+        fecha.classList.add('invalid');
+        document.getElementById('err-date-pasada').style.display = 'block';
+        valido = false;
+      }
     }
 
     return valido;
@@ -1046,11 +1312,13 @@
     if (!validarFormulario()) return;
 
     const datos = {
-      nombre:          document.getElementById('product-name').value.trim(),
-      descripcion:     document.getElementById('description').value.trim(),
+      nombre:           document.getElementById('product-name').value.trim(),
+      descripcion:      document.getElementById('description').value.trim(),
       fechaLanzamiento: document.getElementById('launch-date').value,
-      semanas:         parseInt(document.querySelector('input[name="weeks"]:checked').value, 10),
-      social:          document.querySelector('input[name="social"]:checked').value
+      semanas:          parseInt(document.querySelector('input[name="weeks"]:checked').value, 10),
+      social:           document.querySelector('input[name="social"]:checked').value,
+      frecuencia:       parseInt(document.querySelector('input[name="frecuencia"]:checked').value, 10),
+      tipoContenido:    document.querySelector('input[name="tipo_contenido"]:checked').value
     };
 
     const plan = generarPlan(datos);
@@ -1065,6 +1333,7 @@
       el.classList.remove('invalid');
       const errId = { 'product-name': 'err-name', 'description': 'err-desc', 'launch-date': 'err-date' }[id];
       if (errId) document.getElementById(errId).style.display = 'none';
+      if (id === 'launch-date') document.getElementById('err-date-pasada').style.display = 'none';
     });
   });
   </script>
