@@ -447,6 +447,64 @@
       font-style: italic;
     }
 
+    /* copy button */
+    .btn-copy {
+      width: 100%;
+      padding: 1rem;
+      background: #ffffff;
+      color: #1E6FFF;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border: 2px solid #1E6FFF;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-copy:hover {
+      background: #eef4ff;
+      box-shadow: 0 4px 16px rgba(30, 111, 255, 0.15);
+    }
+
+    .btn-copy:active { transform: scale(0.98); }
+
+    .btn-copy.copied {
+      background: #F5C518;
+      border-color: #F5C518;
+      color: #0a0a0a;
+    }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #0a0a0a;
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.75rem 1.4rem;
+      border-radius: 100px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      white-space: nowrap;
+      z-index: 999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     /* validation error */
     .field-error {
       font-size: 0.78rem;
@@ -841,7 +899,57 @@
       </div>
       ${summaryHTML}
       ${semanasHTML}
+      <button class="btn-copy" id="btn-copy">📋 Copiar plan completo</button>
+      <div class="toast" id="toast">¡Plan copiado! Pégalo donde quieras 🚀</div>
     `;
+  }
+
+  // ─────────────────────────────────────────────
+  //  TEXTO PLANO PARA COPIAR
+  // ─────────────────────────────────────────────
+
+  function generarTextoPlano(datos, plan) {
+    const { nombre, descripcion, semanas, social } = datos;
+    const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
+    const sep  = '═'.repeat(48);
+    const sep2 = '─'.repeat(48);
+
+    const lineas = [
+      sep,
+      `PLAN DE LANZAMIENTO: ${nombre.toUpperCase()}`,
+      sep,
+      `Producto:          ${nombre}`,
+      `Descripción:       ${descripcion}`,
+      `Red social:        ${SOCIAL_LABELS[social]}`,
+      `Semanas preventa:  ${semanas}`,
+      `Inicio preventa:   ${capitalizar(formatearFecha(fechaIniPreventa))}`,
+      `Día lanzamiento:   ${capitalizar(formatearFecha(fechaLanz))}`,
+      `Posts sugeridos:   ${semanas * 3}`,
+      ''
+    ];
+
+    semanasPlan.forEach(s => {
+      lineas.push(sep);
+      lineas.push(`SEMANA ${s.numero} DE ${semanasPlan.length}  —  ${s.fase.emoji} ${s.fase.nombre.toUpperCase()}`);
+      lineas.push(`${capitalizar(formatearFecha(s.inicioSemana))} — ${capitalizar(formatearFecha(s.finSemana))}`);
+      lineas.push(sep);
+      lineas.push(`Objetivo: ${s.fase.objetivo}`);
+      lineas.push('');
+
+      s.posts.forEach((post, pi) => {
+        lineas.push(`${sep2}`);
+        lineas.push(`POST ${pi + 1}  ·  ${post.formato}`);
+        lineas.push(`Tema: ${post.tema}`);
+        lineas.push(`Hook: ${post.hook}`);
+        lineas.push('');
+      });
+    });
+
+    lineas.push(sep);
+    lineas.push('Generado con Planificador de Lanzamiento — Club Geek');
+    lineas.push(sep);
+
+    return lineas.join('\n');
   }
 
   // ─────────────────────────────────────────────
@@ -884,7 +992,7 @@
   //  MOSTRAR / OCULTAR SECCIONES
   // ─────────────────────────────────────────────
 
-  function mostrarResultado(html) {
+  function mostrarResultado(html, datosPlan, planGenerado) {
     const formSection   = document.getElementById('form-section');
     const resultSection = document.getElementById('result-section');
     const header        = document.getElementById('main-header');
@@ -898,6 +1006,23 @@
     document.body.classList.add('showing-result');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Botón "Copiar plan"
+    document.getElementById('btn-copy').addEventListener('click', () => {
+      const texto = generarTextoPlano(datosPlan, planGenerado);
+      navigator.clipboard.writeText(texto).then(() => {
+        const btn   = document.getElementById('btn-copy');
+        const toast = document.getElementById('toast');
+        btn.textContent = '✓ ¡Copiado!';
+        btn.classList.add('copied');
+        toast.classList.add('show');
+        setTimeout(() => {
+          btn.textContent = '📋 Copiar plan completo';
+          btn.classList.remove('copied');
+          toast.classList.remove('show');
+        }, 3000);
+      });
+    });
 
     // Botón "Editar datos"
     document.getElementById('btn-back').addEventListener('click', () => {
@@ -930,7 +1055,7 @@
 
     const plan = generarPlan(datos);
     const html = renderResultado(datos, plan);
-    mostrarResultado(html);
+    mostrarResultado(html, datos, plan);
   });
 
   // Limpiar estado invalid en tiempo real
