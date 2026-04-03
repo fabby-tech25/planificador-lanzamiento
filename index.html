@@ -803,6 +803,167 @@
       border: 1px solid #bfdbfe;
     }
 
+    /* ── Loading state ── */
+    .loading-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 380px;
+      text-align: center;
+      padding: 3rem 2rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 0 8px 40px rgba(30, 111, 255, 0.08);
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3.5px solid #e5e7eb;
+      border-top-color: #1E6FFF;
+      border-radius: 50%;
+      animation: giro 0.75s linear infinite;
+      margin-bottom: 1.75rem;
+    }
+
+    @keyframes giro { to { transform: rotate(360deg); } }
+
+    .loading-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #0a0a0a;
+      margin-bottom: 0.5rem;
+    }
+
+    .loading-sub {
+      font-size: 0.92rem;
+      color: #374151;
+      line-height: 1.55;
+      margin-bottom: 0.5rem;
+    }
+
+    .loading-hint {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      max-width: 300px;
+      line-height: 1.5;
+    }
+
+    .loading-dots { display: inline-flex; gap: 4px; margin-left: 3px; }
+    .loading-dots span {
+      width: 5px; height: 5px;
+      background: #1E6FFF; border-radius: 50%;
+      animation: pulso 1.2s ease infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulso {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.35; }
+      40%           { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── Error state ── */
+    .error-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 3rem 2rem;
+      border: 1.5px solid #fecaca;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 8px 40px rgba(220, 38, 38, 0.06);
+    }
+
+    .error-icon { font-size: 2.25rem; margin-bottom: 1rem; }
+
+    .error-card h2 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0a0a0a;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-detail {
+      font-size: 0.83rem;
+      color: #6b7280;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1.5rem;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+    .error-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .btn-reintentar {
+      padding: 0.85rem;
+      background: #1E6FFF;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-reintentar:hover { background: #155de0; }
+
+    .btn-fallback {
+      padding: 0.85rem;
+      background: #fff;
+      color: #374151;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-fallback:hover { border-color: #1E6FFF; color: #1E6FFF; }
+
+    .btn-volver-form {
+      background: none;
+      border: none;
+      font-family: inherit;
+      font-size: 0.83rem;
+      color: #9ca3af;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0.25rem;
+    }
+
+    .btn-volver-form:hover { color: #374151; }
+
+    /* ── Insignia IA en resultado ── */
+    .ia-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
     @media (max-width: 560px) {
       .card { padding: 1.75rem 1.25rem; }
       .header h1 { font-size: 1.65rem; }
@@ -1007,6 +1168,11 @@
 
   <script>
   // ─────────────────────────────────────────────
+  //  API KEY — reemplaza con tu clave de Gemini
+  // ─────────────────────────────────────────────
+  const GEMINI_API_KEY = 'AIzaSyC69s1E6A9nlMj9dOvDhIog4z_sAfO75tc';
+
+  // ─────────────────────────────────────────────
   //  CONFIGURACIÓN
   // ─────────────────────────────────────────────
 
@@ -1029,6 +1195,227 @@
     urgente:     { nombre: 'Urgente',     emoji: '⚡', desc: 'Genera acción inmediata' },
     educativo:   { nombre: 'Educativo',   emoji: '📚', desc: 'Enseña y genera autoridad' }
   };
+
+  // ─────────────────────────────────────────────
+  //  GEMINI IA — PROMPT, LLAMADA E INYECCIÓN
+  // ─────────────────────────────────────────────
+
+  function construirPrompt(datos, semanasPlan) {
+    const { nombre, descripcion, social, tono, semanas, frecuencia } = datos;
+
+    const TONOS_LABEL = {
+      empoderador: 'Empoderador (inspira y motiva — frases de poder, celebra la capacidad de la lectora)',
+      cercano:     'Cercano (como hablar con una amiga — tuteo, lenguaje coloquial latinoamericano, cálido)',
+      urgente:     'Urgente (genera acción inmediata — FOMO real, llamados directos, mayúsculas con criterio)',
+      educativo:   'Educativo (enseña y genera autoridad — datos, mecanismos, explicaciones concretas)'
+    };
+
+    const SOCIAL_LABEL = {
+      instagram: 'Instagram (Reels de hasta 90 seg, Carruseles guardados por valor informativo o emocional)',
+      tiktok:    'TikTok (videos 30-60 seg, hooks en la primera frase, ritmo dinámico)',
+      facebook:  'Facebook (contenido narrativo, comunidades, CTA con enlace explícito)'
+    };
+
+    // Posts agrupados por semana: el objetivo aparece una sola vez por fase
+    const semanasPorFase = semanasPlan.map(s => ({
+      semana:   s.numero,
+      fase:     s.faseId,
+      objetivo: s.fase.objetivo,
+      posts:    s.posts.map((post, pi) => ({
+        id:      `sem${s.numero}_p${pi + 1}`,
+        tema:    post.tema,
+        formato: post.esReel ? 'Reel' : 'Carrusel'
+      }))
+    }));
+
+    const totalPosts = semanasPlan.reduce((n, s) => n + s.posts.length, 0);
+
+    return `Eres experta en marketing digital para emprendedoras latinoamericanas. Vas a crear contenido de redes sociales para este producto específico:
+
+PRODUCTO: ${nombre}
+PARA QUIÉN ES: ${descripcion}
+TONO: ${TONOS_LABEL[tono] || tono}
+
+El contenido debe mencionar síntomas, situaciones y emociones REALES de esa audiencia específica. Por ejemplo si es un curso de nutrición hormonal para mujeres en perimenopausia, debe mencionar: calores, insomnio, aumento de peso inexplicable, cambios de humor, sentirse incomprendida por el médico. NUNCA uses frases como "el problema que tu audiencia ya conoce", "las herramientas correctas", "desde el primer día", "esto cambia todo", "tu versión futura", "el momento perfecto" o cualquier frase que funcione para cualquier producto. Si no puedes ser específico al nicho, no lo escribas.
+
+RED SOCIAL: ${SOCIAL_LABEL[social] || social}
+SEMANAS DE PREVENTA: ${semanas} | POSTS POR SEMANA: ${frecuencia}
+
+━━━ PLAN DE CONTENIDO (${totalPosts} posts) ━━━
+${JSON.stringify(semanasPorFase, null, 2)}
+
+━━━ INSTRUCCIONES ━━━
+1. Cada post debe tener ángulo, estructura y apertura COMPLETAMENTE DISTINTOS. Si uno abre con pregunta, el siguiente no puede abrir con pregunta.
+2. INTRO del Reel: 1 frase que para el scroll en 3 segundos. Debe nombrar un síntoma, emoción o situación real y específica de esa audiencia. No conceptos abstractos.
+3. PROBLEMA del Reel: describe la situación concreta que vive esa audiencia — sus síntomas físicos, emociones, frustraciones específicas del nicho.
+4. SOLUCIÓN del Reel: explica qué hace "${nombre}" concretamente para resolver eso. No "te acompaña", no "tiene el método". Algo tangible.
+5. CARRUSEL portada: un título que esa audiencia específica sienta que es exactamente para ella. Slides con bullets concretos del nicho.
+6. CAPTIONS: escritos como una persona real. Máximo 5 emojis. CTA específico al final — qué hacer, dónde ir, qué escribir.
+7. La fase define el enfoque: Expectativa = intriga sin revelar. Deseo = transformación concreta. Urgencia = escasez o tiempo real. Cierre = acción directa.
+8. Máximo 2 menciones de "${nombre}" por post. La protagonista es la lectora y su problema.
+9. Todo en español latinoamericano.
+
+━━━ FORMATO DE RESPUESTA ━━━
+Responde ÚNICAMENTE con JSON válido. Sin texto antes ni después. Sin markdown. Sin bloques de código.
+{
+  "audiencia_identificada": "1 línea describiendo a quién va dirigido, extraído de la descripción",
+  "posts": [
+    {
+      "id": "sem1_p1",
+      "formato": "Reel",
+      "contenido": {
+        "intro": "1 frase que detiene el scroll — síntoma o situación real del nicho",
+        "problema": "2-3 frases sobre la situación concreta que vive esa audiencia",
+        "solucion": "2-3 frases sobre qué hace el producto específicamente para resolver eso",
+        "cta": "1 frase de acción clara y específica",
+        "caption": "caption completo con emojis y hashtags del nicho"
+      }
+    },
+    {
+      "id": "sem1_p2",
+      "formato": "Carrusel",
+      "contenido": {
+        "slides": [
+          { "num": 1, "label": "PORTADA",          "texto": "título que la lectora sienta que es para ella" },
+          { "num": 2, "label": "CONTEXTO",          "texto": "situación real del nicho, 2-3 líneas" },
+          { "num": 3, "label": "EL PROBLEMA",       "texto": "síntomas o consecuencias concretas en bullets" },
+          { "num": 4, "label": "LA SOLUCIÓN",       "texto": "qué hace el producto concretamente, en bullets o pasos" },
+          { "num": 5, "label": "LO QUE LOGRARÁS",  "texto": "resultados concretos y medibles en bullets" },
+          { "num": 6, "label": "SIGUIENTE PASO",    "texto": "instrucción específica: qué hacer ahora" }
+        ],
+        "caption": "caption completo con emojis y hashtags del nicho"
+      }
+    }
+  ]
+}
+Genera los ${totalPosts} posts con los ids exactos del plan de contenido de arriba.`;
+  }
+
+  async function llamarGemini(prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.87,
+          topP: 0.95,
+          maxOutputTokens: 8192,
+          responseMimeType: 'application/json'
+        }
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData?.error?.message || `Error HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!texto) throw new Error('Gemini devolvió una respuesta vacía.');
+
+    try {
+      return JSON.parse(texto);
+    } catch {
+      throw new Error('La respuesta de Gemini no es JSON válido.');
+    }
+  }
+
+  // Inyecta el contenido generado por IA en la estructura del plan
+  // Devuelve la audiencia identificada por Gemini (si la hay)
+  function inyectarContenidoIA(semanasPlan, respuesta) {
+    console.log('[Gemini] Respuesta raw:', JSON.stringify(respuesta, null, 2));
+
+    const mapa = {};
+    (respuesta.posts || []).forEach(p => {
+      // Acepta tanto { id, contenido: {...} } como { id, intro, problema, ... } directo
+      mapa[p.id] = p.contenido || p;
+    });
+
+    semanasPlan.forEach(s => {
+      s.posts.forEach((post, pi) => {
+        const id = `sem${s.numero}_p${pi + 1}`;
+        const c = mapa[id];
+        if (!c) {
+          console.warn(`[Gemini] No se encontró contenido para ${id}`, Object.keys(mapa));
+          return;
+        }
+
+        if (post.esReel) {
+          post.contenido = {
+            intro:    (c.intro    && c.intro.trim())    ? c.intro    : post.contenido.intro,
+            problema: (c.problema && c.problema.trim()) ? c.problema : post.contenido.problema,
+            solucion: (c.solucion && c.solucion.trim()) ? c.solucion : post.contenido.solucion,
+            cta:      (c.cta      && c.cta.trim())      ? c.cta      : post.contenido.cta,
+            caption:  (c.caption  && c.caption.trim())  ? c.caption  : post.contenido.caption
+          };
+          console.log(`[Gemini] Reel ${id} reemplazado:`, post.contenido.intro.slice(0, 60));
+        } else {
+          post.contenido = {
+            slides:  (c.slides && c.slides.length) ? c.slides : post.contenido.slides,
+            caption: (c.caption && c.caption.trim()) ? c.caption : post.contenido.caption
+          };
+          console.log(`[Gemini] Carrusel ${id} reemplazado:`, (post.contenido.slides[0] || '').slice(0, 60));
+        }
+      });
+    });
+
+    return respuesta.audiencia_identificada || null;
+  }
+
+  // ── UI helpers ──
+
+  function renderCargando(nombre, totalPosts) {
+    return `
+      <div class="loading-card">
+        <div class="spinner"></div>
+        <h2 class="loading-title">Generando tu plan con IA</h2>
+        <p class="loading-sub">
+          Creando <strong>${totalPosts} posts únicos</strong> para <strong>${nombre}</strong>
+          <span class="loading-dots"><span></span><span></span><span></span></span>
+        </p>
+        <p class="loading-hint">Gemini está escribiendo guiones y captions personalizados para tu lanzamiento. Esto toma unos segundos.</p>
+      </div>`;
+  }
+
+  function renderError(mensaje) {
+    return `
+      <div class="error-card">
+        <div class="error-icon">⚠️</div>
+        <h2>No se pudo conectar con Gemini</h2>
+        <p class="error-detail">${mensaje}</p>
+        <div class="error-actions">
+          <button class="btn-reintentar" id="btn-reintentar">↺ &nbsp;Reintentar con IA</button>
+          <button class="btn-fallback"   id="btn-fallback">Continuar sin IA (contenido inteligente)</button>
+          <button class="btn-volver-form" id="btn-volver-form">← Editar datos</button>
+        </div>
+      </div>`;
+  }
+
+  // Transición a pantalla de resultados (sin HTML — solo cambia visibilidad)
+  function activarPantallaResultado() {
+    document.getElementById('form-section').style.display  = 'none';
+    document.getElementById('main-header').style.display   = 'none';
+    document.getElementById('main-container').classList.add('wide');
+    document.body.classList.add('showing-result');
+    document.getElementById('result-section').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Vuelve al formulario desde cualquier estado de la pantalla de resultados
+  function volverAlFormulario() {
+    const resultSection = document.getElementById('result-section');
+    resultSection.classList.remove('visible');
+    resultSection.innerHTML = '';
+    document.getElementById('form-section').style.display  = 'block';
+    document.getElementById('main-header').style.display   = 'block';
+    document.getElementById('main-container').classList.remove('wide');
+    document.body.classList.remove('showing-result');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   // Colores y fondos por fase
   const FASE_STYLES = {
@@ -1615,8 +2002,11 @@
   function renderResultado(datos, plan) {
     const { nombre, semanas, social, frecuencia, tipoContenido, tono } = datos;
     const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
-    const totalPosts = semanas * frecuencia;
-    const tonoInfo   = TONOS[tono] || TONOS.empoderador;
+    const totalPosts  = semanas * frecuencia;
+    const tonoInfo    = TONOS[tono] || TONOS.empoderador;
+    const badgeIA     = datos._generadoConIA
+      ? `&nbsp;<span class="ia-badge">✦ Generado con IA</span>`
+      : '';
 
     const summaryHTML = `
       <div class="summary-card">
@@ -1700,8 +2090,9 @@
         <h2>Plan de lanzamiento para<br><span>${nombre}</span></h2>
         <p>
           ${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${frecuencia} posts/semana · ${TIPO_LABELS[tipoContenido]} + Historias diarias
-          &nbsp;<span class="tono-badge">${tonoInfo.emoji} Tono ${tonoInfo.nombre}</span>
+          &nbsp;<span class="tono-badge">${tonoInfo.emoji} Tono ${tonoInfo.nombre}</span>${badgeIA}
         </p>
+        ${datos._audiencia ? `<p style="margin-top:0.5rem;font-size:0.83rem;color:#6b7280;">👥 Audiencia identificada: <em>${datos._audiencia}</em></p>` : ''}
       </div>
       ${summaryHTML}
       ${semanasHTML}
@@ -1911,9 +2302,8 @@
   //  EVENT LISTENER
   // ─────────────────────────────────────────────
 
-  document.getElementById('launch-form').addEventListener('submit', function(e) {
+  document.getElementById('launch-form').addEventListener('submit', async function(e) {
     e.preventDefault();
-
     if (!validarFormulario()) return;
 
     const datos = {
@@ -1927,9 +2317,66 @@
       tono:             document.querySelector('input[name="tono"]:checked').value
     };
 
+    // Genera la estructura del plan (fechas, fases, temas)
     const plan = generarPlan(datos);
-    const html = renderResultado(datos, plan);
-    mostrarResultado(html, datos, plan);
+    const totalPosts = plan.semanasPlan.reduce((n, s) => n + s.posts.length, 0);
+
+    // Muestra pantalla de carga
+    const resultSection = document.getElementById('result-section');
+    activarPantallaResultado();
+    resultSection.innerHTML = renderCargando(datos.nombre, totalPosts);
+
+    const usarIA = GEMINI_API_KEY && GEMINI_API_KEY !== 'AIzaSyC69s1E6A9nlMj9dOvDhIog4z_sAfO75tc';
+
+    const ejecutarConIA = async () => {
+      const prompt = construirPrompt(datos, plan.semanasPlan);
+      const respuesta = await llamarGemini(prompt);
+      const audiencia = inyectarContenidoIA(plan.semanasPlan, respuesta);
+      if (audiencia) datos._audiencia = audiencia;
+      datos._generadoConIA = true;
+    };
+
+    const mostrarPlan = () => {
+      const html = renderResultado(datos, plan);
+      mostrarResultado(html, datos, plan);
+    };
+
+    const mostrarFallback = () => {
+      datos._generadoConIA = false;
+      mostrarPlan();
+    };
+
+    if (!usarIA) {
+      // Sin API key válida: usa contenido estático directamente
+      mostrarFallback();
+      return;
+    }
+
+    try {
+      await ejecutarConIA();
+      mostrarPlan();
+    } catch (err) {
+      console.error('Gemini error:', err);
+
+      // Muestra error con 3 opciones
+      resultSection.innerHTML = renderError(err.message);
+
+      document.getElementById('btn-reintentar').addEventListener('click', async () => {
+        resultSection.innerHTML = renderCargando(datos.nombre, totalPosts);
+        try {
+          await ejecutarConIA();
+          mostrarPlan();
+        } catch (err2) {
+          resultSection.innerHTML = renderError(err2.message);
+          // Re-adjunta listeners (recursión evitada: solo 1 reintento muestra el error final)
+          document.getElementById('btn-fallback')?.addEventListener('click', mostrarFallback);
+          document.getElementById('btn-volver-form')?.addEventListener('click', volverAlFormulario);
+        }
+      });
+
+      document.getElementById('btn-fallback').addEventListener('click', mostrarFallback);
+      document.getElementById('btn-volver-form').addEventListener('click', volverAlFormulario);
+    }
   });
 
   // Limpiar estado invalid en tiempo real
