@@ -1242,75 +1242,95 @@
   //  GENERADORES DE CONTENIDO POR FORMATO Y TONO
   // ─────────────────────────────────────────────
 
-  function generarContenidoReel(nombre, descripcion, tema, faseId, tono) {
-    const d = recortar(descripcion, 75);
+  // Capitaliza primera letra de una cadena
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-    const intros = {
-      empoderador: {
-        expectativa: `"¿Lista para lo que viene? Porque ${nombre} llega pronto y va a cambiar todo lo que creías posible. Quédate hasta el final."`,
-        deseo:       `"Hay personas que logran resultados increíbles mientras otras siguen esperando el momento perfecto. La diferencia es una: ${nombre}."`,
-        urgencia:    `"Voy a ser directa: tienes muy poco tiempo para decidir. Y tú ya sabes que mereces dar este paso. ${nombre} cierra pronto."`,
-        cierre:      `"¡Llegó TU momento! ${nombre} ya está disponible y estoy aquí para decirte que PUEDES. Que estás lista. Que es ahora mismo."`
-      },
-      cercano: {
-        expectativa: `"Oye, me muero de ganas de contarte lo que viene... pero todavía no puedo. Solo te digo: activa las notificaciones. Confía en mí. 🤫"`,
-        deseo:       `"Espera, espera — necesito que veas esto porque lo que ${nombre} hace por personas como tú es de verdad increíble. Te lo juro."`,
-        urgencia:    `"Mira, te digo como si fueras mi mejor amiga: ${nombre} se va a cerrar pronto y de verdad no quiero que te quedes fuera."`,
-        cierre:      `"¡¡Amiga!! ¡¡Ya llegó!! ${nombre} está disponible desde HOY y quiero que seas de las primeras. ¡Enlace en bio, vamos! 🎉"`
-      },
-      urgente: {
-        expectativa: `"PAUSA. Antes de seguir scrolleando: algo que puede cambiar tu situación está por llegar. Esto no lo puedes ignorar."`,
-        deseo:       `"No tengo tiempo para rodeos: ${nombre} es exactamente lo que necesitas y el acceso es limitado. Mira esto hasta el final."`,
-        urgencia:    `"⚡ ALERTA. ${nombre} cierra en días. Cada segundo que sigues dudando es un segundo que alguien más está aprovechando."`,
-        cierre:      `"¡ABRIÓ! ${nombre} está disponible AHORA MISMO. Acceso limitado. Si estás viendo esto, todavía puedes entrar. ¡YA!"`
-      },
-      educativo: {
-        expectativa: `"Hoy quiero hablarte de algo que la mayoría ignora — y que es exactamente por qué ${nombre} existe. Quédate hasta el final."`,
-        deseo:       `"Antes de que ${nombre} abra, quiero que entiendas exactamente qué vas a recibir y por qué funciona. Es información importante."`,
-        urgencia:    `"Hay razones muy específicas por las que actuar en los primeros días de un lanzamiento marca toda la diferencia. Te las explico."`,
-        cierre:      `"En los próximos 60 segundos te explico exactamente qué es ${nombre}, cómo funciona y qué vas a lograr. Quédate."`
-      }
+  function generarContenidoReel(nombre, descripcion, tema, faseId, tono, postIdx) {
+    const d  = recortar(descripcion, 70);
+    const t  = tema.toLowerCase();
+    const tc = cap(tema);
+    const i  = postIdx % 5;
+
+    // ── INTRO (hook 3 seg) — siempre basado en el tema específico ──
+    const INTROS = {
+      empoderador: [
+        `"${tc} — esto es lo que nadie te había explicado con claridad. Y es exactamente por qué existe ${nombre}. Quédate hasta el final."`,
+        `"¿Cuánto tiempo llevas lidiando con ${t}? Hoy eso cambia. ${nombre} tiene la respuesta que buscabas y te la voy a mostrar ahora."`,
+        `"Voy a ser directa: ${t} tiene solución. Una solución concreta, probada y con nombre propio: ${nombre}. Mira esto."`,
+        `"La diferencia entre quien ya resolvió ${t} y quien sigue atascada es una sola cosa. Hoy te la muestro con ${nombre}."`,
+        `"No más prueba y error con ${t}. ${nombre} tiene el sistema exacto que estabas buscando. Esto cambia todo para ti."`
+      ],
+      cercano: [
+        `"Oye, ¿me das un segundo? Necesito hablarte de ${t} porque sé que esto te resuena — y tengo algo que te va a cambiar el juego."`,
+        `"Mira, yo también pasé por esto de ${t}. Por eso creé ${nombre}. Escucha esto porque creo que es exactamente lo que necesitás."`,
+        `"¿Te pasa lo de ${t}? A mí también me pasó. Y te juro que cuando encontré la solución todo fue diferente. Te cuento."`,
+        `"Entre amigas: ${t} es algo que MUCHAS vivimos pero pocas hablan. Hoy lo hablamos. Y tiene solución, te lo prometo."`,
+        `"Tengo que contarte algo sobre ${t} porque si no lo sabes, vas a seguir en el mismo lugar. Y eso no lo quiero para ti."`
+      ],
+      urgente: [
+        `"PAUSA. ${tc}: si seguís scrolleando sin ver esto, te lo vas a perder. Tengo 60 segundos para mostrarte algo que cambia todo."`,
+        `"⚡ Alerta sobre ${t}: esto te afecta AHORA MISMO y tienes muy poco tiempo para actuar antes de que sea tarde."`,
+        `"${tc}: cada día que pasa sin resolver esto te cuesta resultados reales. Tengo la solución en este reel. Mirá."`,
+        `"No sigas scrolleando — ${t} es exactamente por qué muchas personas no llegan a sus metas. Tengo la solución. ¡YA!"`,
+        `"Esto es urgente: ${t} tiene una ventana de oportunidad muy corta. Y ${nombre} es la respuesta. Mira esto ahora."`
+      ],
+      educativo: [
+        `"Hoy te explico todo sobre ${t}: qué es, por qué importa y cómo ${nombre} lo convierte en resultados reales. Quédate."`,
+        `"${tc}: hay información que la mayoría desconoce sobre esto. En los próximos 60 segundos te la doy toda. Toma nota."`,
+        `"Lección de hoy: ${t}. Por qué el 80% lo hace mal y cómo ${nombre} te da el método que sí funciona. Atencion."`,
+        `"¿Sabés exactamente por qué ${t} importa tanto? Hoy lo desglosamos con datos y ejemplos concretos. Esto es lo que necesitas."`,
+        `"${tc}: 3 claves que la mayoría no conoce. Información basada en resultados reales, no en teoría. Vamos."`
+      ]
     };
 
-    const problemas = {
-      expectativa: `¿Cuántas veces has intentado avanzar y algo siempre te detiene?\n\nNo es falta de ganas. Es que hasta ahora no tenías las herramientas correctas para ${d}.`,
-      deseo:       `El problema real no es la falta de información. Es la falta de un sistema claro y probado.\n\n${nombre} fue diseñado exactamente para eso: ${d}.`,
-      urgencia:    `Seguir esperando el "momento perfecto" tiene un costo real. Cada semana que pasa sin acción es tiempo y resultados que no vuelven.`,
-      cierre:      `El único obstáculo que te separa de tus resultados eres tú misma — y ese obstáculo desaparece hoy con ${nombre}.`
-    };
+    // ── PROBLEMA — ángulo específico al tema, 5 variaciones ──
+    const PROBLEMAS = [
+      `El error más común al enfrentar ${t} es seguir intentando sin el sistema correcto.\n\nSin método probado, el esfuerzo se convierte en frustración — y los resultados no llegan.`,
+      `¿Por qué ${t} sigue siendo un obstáculo para tantas personas?\n\nPorque la mayoría lo aborda sin claridad, sin estructura y sin las herramientas que realmente funcionan.`,
+      `${tc} no es un problema de motivación. Es un problema de método.\n\nSin el método correcto, se pueden pasar meses — incluso años — en el mismo punto exacto.`,
+      `Cuando no hay claridad sobre ${t}, todo cuesta el doble: más tiempo, más energía, más frustración.\n\nY los resultados siguen sin aparecer, aunque el esfuerzo esté ahí.`,
+      `La mayoría enfrenta ${t} de la manera más difícil: sola, sin guía, probando cosas que no funcionan.\n\nEl resultado es siempre el mismo: estancamiento y desgaste.`
+    ];
 
-    const soluciones = {
-      expectativa: `${nombre} viene a resolver exactamente eso. No es una promesa genérica — es una solución diseñada para tu realidad y tu momento.`,
-      deseo:       `Con ${nombre} tienes acceso a un método paso a paso. Sin adivinar, sin perder tiempo, sin frustraciones. Solo resultados reales.`,
-      urgencia:    `${nombre} te da todo lo que necesitas para empezar ahora mismo. Sistema claro, herramientas listas, resultados desde el día 1.`,
-      cierre:      `${nombre} ya está abierto. Accedes hoy y desde el primer minuto tienes claridad, método y todo lo que necesitas para avanzar.`
-    };
+    // ── SOLUCIÓN — vincula el tema al producto, 5 variaciones ──
+    const SOLUCIONES = [
+      `${nombre} convierte ${t} en algo concreto y manejable.\n\nUn método paso a paso que elimina la adivinanza y te da claridad — desde el primer día.`,
+      `Con ${nombre}, ${t} deja de ser un obstáculo y se convierte en tu ventaja.\n\nPorque tienes el sistema exacto, las herramientas correctas y el acompañamiento que necesitas.`,
+      `${nombre} fue creado exactamente para esto: resolver ${t} con un método probado.\n\nNo genérico, no teórico — diseñado para la realidad de personas como tú.`,
+      `La diferencia que hace ${nombre} en ${t} es simple: te da el mapa que te faltaba.\n\nSin el mapa, cualquiera se pierde. Con ${nombre}, sabes exactamente a dónde vas.`,
+      `${nombre} te da lo que ninguna otra solución te había dado para ${t}: claridad, sistema y resultados reales.\n\nDesde el día 1, sabes qué hacer y por qué funciona.`
+    ];
 
-    const ctas = {
-      empoderador: {
-        expectativa: `"Activa las notificaciones ahora. Lo que viene va a inspirarte a dar tu siguiente paso. Tú ya estás lista. 💙"`,
-        deseo:       `"Guarda este video. Y cuando ${nombre} abra, recuerda este momento en que supiste que era para ti. 💙"`,
-        urgencia:    `"Enlace en bio para la lista de espera. Da ese paso ahora. Mereces estar adentro. Tu versión futura te lo agradece. 🚀"`,
-        cierre:      `"Enlace en bio. Da el paso ahora mismo. Tu versión futura ya te está esperando. 🚀"`
-      },
-      cercano: {
-        expectativa: `"Comenta 'ya' si quieres que te avise cuando lo anuncie. ¡Te mando info antes que a nadie! 💌"`,
-        deseo:       `"¿Te identificaste? Cuéntame en comentarios. Y si quieres más info de ${nombre}, escríbeme — te cuento todo. ✨"`,
-        urgencia:    `"Escríbeme por DM si tienes dudas — te respondo hoy mismo. No quiero que te quedes fuera, de verdad. 🤍"`,
-        cierre:      `"Enlace en bio. Y si tienes preguntas, escríbeme ahora — te respondo en minutos. ¡Estoy aquí para ti! 💬"`
-      },
-      urgente: {
-        expectativa: `"¡Activa las notificaciones YA para no perderte el anuncio! No digas que no te avisé."`,
-        deseo:       `"Lista de espera: ENLACE EN BIO. Hazlo AHORA antes de que se llene. ¡Sí, ahora!"`,
-        urgencia:    `"ENLACE EN BIO. Lista de espera abierta. Hazlo AHORA antes de que cierre. ¡Sin excusas!"`,
-        cierre:      `"ENLACE EN BIO. Acceso disponible HOY. Limitado. ¡No esperes más!"`
-      },
-      educativo: {
-        expectativa: `"Guarda este video y activa notificaciones para recibir información completa sobre ${nombre}."`,
-        deseo:       `"Si quieres saber cómo funciona ${nombre} para tu situación específica, escríbeme. Te explico con detalle."`,
-        urgencia:    `"El enlace de la lista de espera está en bio. Te recomiendo leer toda la información antes de decidir."`,
-        cierre:      `"Toda la información sobre ${nombre} está en el enlace de bio. Léela con calma y toma la decisión correcta para ti."`
-      }
+    // ── CTA — varía por tono + índice ──
+    const CTAS = {
+      empoderador: [
+        `"Activa las notificaciones ahora. Lo que viene con ${nombre} va a inspirarte a dar ese paso que llevas tiempo posponiendo. 💙"`,
+        `"Guarda este video. Y cuando ${nombre} abra, recordá este momento en que supiste que era para vos. 💙"`,
+        `"Enlace en bio para la lista de espera de ${nombre}. Da ese paso ahora. Tu versión futura ya te lo agradece. 🚀"`,
+        `"Enlace en bio. ${nombre} está esperándote. Da el paso ahora mismo — te lo mereces. 🚀"`,
+        `"Comentá 'quiero' si esto te resonó y te mando info de ${nombre} antes que a nadie. 💙"`
+      ],
+      cercano: [
+        `"Comentá 'ya' si querés que te avise cuando anuncie ${nombre}. ¡Te mando info antes que a nadie! 💌"`,
+        `"¿Te identificaste? Contame en comentarios. Y si querés más info de ${nombre}, escribime — te cuento todo. ✨"`,
+        `"Escribime por DM si tenés dudas sobre ${nombre} — te respondo hoy mismo. No quiero que te quedes fuera. 🤍"`,
+        `"Enlace en bio para ${nombre}. Y si tenés preguntas, escribime ahora — te respondo en minutos. 💬"`,
+        `"¿Esto te ayudó? Guardá el video y compartilo con alguien que también lo necesite. 🤍"`
+      ],
+      urgente: [
+        `"¡Activá las notificaciones YA para no perderte el anuncio de ${nombre}! No digas que no te avisé. ⚡"`,
+        `"Lista de espera de ${nombre}: ENLACE EN BIO. Hacelo AHORA antes de que se llene. ¡Sin excusas!"`,
+        `"ENLACE EN BIO. ${nombre} abre pronto y las plazas son limitadas. ¡AHORA o te quedás afuera!"`,
+        `"ENLACE EN BIO. Acceso a ${nombre} disponible HOY. Limitado. ¡No esperes más! ⏰"`,
+        `"Cada segundo que tardás con ${nombre} es un segundo que alguien más aprovecha. ¡ENLACE EN BIO! 🔥"`
+      ],
+      educativo: [
+        `"Guardá este video y activá notificaciones para recibir información completa sobre ${nombre}."`,
+        `"Si querés saber cómo ${nombre} aplica a tu situación específica, escribime. Te explico con detalle."`,
+        `"El enlace con toda la info de ${nombre} está en bio. Te recomiendo leerla completa antes de decidir."`,
+        `"Toda la información sobre ${nombre} está en el enlace de bio. Leéla con calma y tomá la decisión correcta."`,
+        `"Guardá este video 🔖 — esta información sobre ${t} y ${nombre} vale mucho. Compartila con quien la necesite."`
+      ]
     };
 
     const emojisTono = { empoderador: '💪✨🚀', cercano: '🤍💬✨', urgente: '⚡🔥⏰', educativo: '📚💡🎯' };
@@ -1321,101 +1341,148 @@
       educativo:   '#aprendizaje #estrategia #resultados'
     };
 
-    const intro    = (intros[tono]    || intros.empoderador)[faseId]    || `"Tengo algo importante que contarte sobre ${nombre}."`;
-    const problema = problemas[faseId]  || `El desafío es real: ${d}`;
-    const solucion = soluciones[faseId] || `${nombre} es la respuesta que estabas buscando.`;
-    const cta      = ((ctas[tono]      || ctas.empoderador)[faseId])    || `"Enlace en bio para ${nombre}."`;
+    const introsT  = INTROS[tono]  || INTROS.empoderador;
+    const ctasT    = CTAS[tono]    || CTAS.empoderador;
+
+    const intro    = introsT[i];
+    const problema = PROBLEMAS[i];
+    const solucion = SOLUCIONES[i];
+    const cta      = ctasT[i];
 
     const hookCaption = intro.replace(/^"|"$/g, '');
-    const caption = `${emojisTono[tono]} ${hookCaption}\n\n👉 ${tema}\n\n💾 Guarda este video · Comparte si te resonó\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
+    const caption = `${emojisTono[tono]} ${hookCaption}\n\n👉 ${tema}\n\n💾 Guardá este video · Compartilo si te resonó\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
 
     return { intro, problema, solucion, cta, caption };
   }
 
-  function generarContenidoCarrusel(nombre, descripcion, tema, faseId, tono) {
+  function generarContenidoCarrusel(nombre, descripcion, tema, faseId, tono, postIdx) {
     const d50 = recortar(descripcion, 55);
     const d80 = recortar(descripcion, 80);
+    const t   = tema.toLowerCase();
+    const tc  = cap(tema);
+    const i   = postIdx % 5;
 
-    const portadas = {
-      empoderador: {
-        expectativa: `${tema.toUpperCase()}: Lo que nadie te había dicho`,
-        deseo:       `La transformación que SÍ es posible con ${nombre}`,
-        urgencia:    `Por qué esperar te está costando más de lo que crees`,
-        cierre:      `${nombre} ya está aquí: tu momento es AHORA`
-      },
-      cercano: {
-        expectativa: `${tema}: lo que necesitaba que supieras`,
-        deseo:       `Cómo ${nombre} cambia todo (y por qué es para ti)`,
-        urgencia:    `Entre nosotras: lo que pasa si esperas demasiado`,
-        cierre:      `¡${nombre} llegó! Y quiero que seas de las primeras`
-      },
-      urgente: {
-        expectativa: `⚡ ${tema.toUpperCase()}: ¿ya lo sabías?`,
-        deseo:       `Por qué necesitas ${nombre} AHORA MISMO`,
-        urgencia:    `TIEMPO LIMITADO: lo que pierdes cada día que esperas`,
-        cierre:      `${nombre.toUpperCase()} ABRIÓ: quedan pocas horas`
-      },
-      educativo: {
-        expectativa: `${tema}: guía completa para entenderlo`,
-        deseo:       `Los 5 pilares de ${nombre} que lo hacen diferente`,
-        urgencia:    `Por qué el timing importa: la guía de ${nombre}`,
-        cierre:      `Todo sobre ${nombre}: lo que debes saber antes de decidir`
-      }
+    // ── PORTADA — directamente del tema, estilizada por tono ──
+    const PORTADAS = {
+      empoderador: [
+        `${tc.toUpperCase()}: lo que nadie te había dicho (hasta hoy)`,
+        `${tc}: la guía que sí cambia todo con ${nombre}`,
+        `Por qué ${t} es más importante de lo que crees`,
+        `${tc}: el antes y el después con ${nombre}`,
+        `Lo que cambia cuando finalmente entiendes ${t}`
+      ],
+      cercano: [
+        `${tc}: lo que necesitabas escuchar`,
+        `Hablemos de ${t} (y de por qué ${nombre} existe)`,
+        `${tc}: lo que yo también viví y cómo lo resolví`,
+        `Entre amigas: todo sobre ${t} y ${nombre}`,
+        `${tc} sin filtros — lo que nadie te dice`
+      ],
+      urgente: [
+        `⚡ ${tc.toUpperCase()}: ¿ya lo sabías?`,
+        `${tc.toUpperCase()}: esto no puede esperar más`,
+        `URGENTE: lo que ${t} te está costando HOY`,
+        `${tc}: actúa ahora o te quedás atrás`,
+        `${tc.toUpperCase()}: la información que necesitás AHORA`
+      ],
+      educativo: [
+        `${tc}: guía completa para entenderlo`,
+        `Todo sobre ${t}: datos, claves y método`,
+        `${tc}: lo que dice la evidencia`,
+        `3 claves sobre ${t} que transforman resultados`,
+        `${tc}: análisis completo con ${nombre}`
+      ]
     };
 
-    const slide2s = {
-      expectativa: `Hay algo que la mayoría ignora sobre ${d50}.\n\nY esa brecha tiene un costo real en tus resultados.`,
-      deseo:       `Cuando ${nombre} llegue a tus manos, vas a entender por qué tantas personas llevaban tiempo buscando exactamente esto.`,
-      urgencia:    `Quiero ser honesta contigo: cada semana que pasa sin tomar acción es tiempo que no vuelve.\n\nY la evidencia lo confirma.`,
-      cierre:      `${nombre} ya está disponible. Antes de que entres, quiero que entiendas exactamente qué recibes y qué vas a lograr.`
+    // ── SLIDE 2 (Contexto) — 5 variaciones basadas en el tema ──
+    const SLIDE2S = [
+      `Hablar de ${t} incomoda a muchas porque implica reconocer que hay algo que no está funcionando.\n\nY esa incomodidad tiene un costo real en tus resultados.`,
+      `Hay algo que la mayoría ignora sobre ${t}: no es tan complicado como parece.\n\nEl problema es que nadie lo había explicado de la manera correcta — hasta ahora.`,
+      `${tc} es uno de esos temas que todo el mundo menciona pero muy pocas entienden a fondo.\n\nHoy cambia eso. Cada slide de este carrusel suma claridad.`,
+      `Cuando alguien dice que no puede avanzar con ${t}, casi siempre hay una razón muy concreta.\n\nY no es falta de esfuerzo. Es falta del sistema correcto.`,
+      `${tc} afecta directamente tus resultados — lo sepas o no.\n\nPor eso creé ${nombre}: para que dejes de improvisar y empieces a avanzar con método.`
+    ];
+
+    // ── SLIDE 3 (El problema) — 5 variaciones ──
+    const SLIDE3S = [
+      `¿Te ha pasado esto con ${t}?\n\n→ Intentás avanzar y algo siempre te detiene\n→ Sentís que te falta una pieza clave\n→ Ves a otras personas lograrlo mientras vos seguís en el mismo lugar\n\nNo es suerte. Es sistema.`,
+      `El error más común con ${t}:\n\n✗ Buscar soluciones genéricas\n✗ Actuar sin claridad ni estructura\n✗ Esperar "el momento perfecto"\n\nResultado: meses de esfuerzo sin avance real.`,
+      `Lo que nadie te dice sobre ${t}:\n\n→ No es un problema de motivación\n→ No es un problema de tiempo\n→ Es un problema de método\n\nSin el método correcto, el esfuerzo no alcanza.`,
+      `Por qué ${t} sigue siendo un obstáculo:\n\n✗ Demasiada información sin estructura\n✗ Consejos contradictorios por todos lados\n✗ Sin alguien que lo explique para tu realidad\n\nEso genera parálisis y desgaste.`,
+      `Las consecuencias de no resolver ${t}:\n\n→ Más tiempo perdido en prueba y error\n→ Más energía gastada sin resultados\n→ Más distancia entre donde estás y donde querés estar\n\n¿Cuánto más vale esperar?`
+    ];
+
+    // ── SLIDE 4 (La solución) — 5 variaciones ──
+    const SLIDE4S = [
+      `Por eso existe ${nombre}.\n\nUn sistema diseñado específicamente para ${d80}.\n\nNo genérico. No teórico.\nReal, paso a paso y aplicable desde el día 1.`,
+      `${nombre} convierte ${t} en algo concreto:\n\n✓ Método claro sin adivinar\n✓ Herramientas listas para usar\n✓ Estructura que genera resultados\n\nExactamente lo que faltaba.`,
+      `La diferencia que hace ${nombre} con ${t}:\n\n→ Te da el mapa que te faltaba\n→ Elimina la prueba y error\n→ Convierte el esfuerzo en resultados medibles\n\nAsí de concreto.`,
+      `Con ${nombre} y ${t} pasan estas cosas:\n\n✓ Claridad desde el primer módulo\n✓ Acción sin parálisis\n✓ Avance visible semana a semana\n\nSin vueltas. Sin excusas.`,
+      `${nombre} existe porque ${t} merece una solución real:\n\n→ No más información suelta\n→ No más improvisar\n→ Un sistema completo para ${d50}\n\nEso es ${nombre}.`
+    ];
+
+    // ── SLIDE 5 (Lo que lograrás) — varía por tono + idx ──
+    const SLIDE5S = {
+      empoderador: [
+        `Con ${nombre} y ${t} resuelto, podrás:\n\n💪 Avanzar con confianza real\n🎯 Tener claridad sobre cada paso\n✨ Crear los resultados que sabés que merecés\n\nEsto es lo que te espera.`,
+        `Lo que logran quienes resuelven ${t} con ${nombre}:\n\n💪 Resultados reales y medibles\n🎯 Método claro sin adivinar\n✨ Confianza para avanzar sin frenos`,
+        `Cuando ${t} deja de ser un obstáculo:\n\n💪 Empezás a avanzar de verdad\n🎯 Las decisiones se vuelven más fáciles\n✨ Los resultados empiezan a llegar\n\n${nombre} hace posible esto.`,
+        `El cambio que genera ${nombre} con ${t}:\n\n💪 De la parálisis → a la acción\n🎯 Del "no sé cómo" → al "ya lo estoy haciendo"\n✨ Del estancamiento → a los resultados`,
+        `Lo que mereces lograr con ${nombre}:\n\n💪 Claridad total sobre ${t}\n🎯 Sistema probado a tu disposición\n✨ Resultados que confirman que valió la pena`
+      ],
+      cercano: [
+        `Lo que quiero para vos con ${nombre}:\n\n🤍 Que ${t} deje de ser una carga\n✨ Que tengas un plan claro de verdad\n💬 Que no sientas que estás sola en esto`,
+        `Con ${nombre}, imaginate:\n\n🤍 Entender ${t} de una vez por todas\n✨ Avanzar sin tener que adivinar\n💬 Sentirte acompañada en cada paso`,
+        `Lo que cambia cuando resolvés ${t} con ${nombre}:\n\n🤍 El miedo se convierte en claridad\n✨ El esfuerzo empieza a dar frutos\n💬 Sentís que por fin vas por el camino correcto`,
+        `Ya dentro de ${nombre} vas a:\n\n🤍 Entender ${t} desde adentro\n✨ Ver resultados que podés compartir\n💬 Ser parte de una comunidad que también lo vive`,
+        `Te mereces resolver ${t} con ${nombre}:\n\n🤍 Sin más prueba y error\n✨ Con un método que ya funciona\n💬 Con alguien que lo entiende de verdad`
+      ],
+      urgente: [
+        `${nombre} y ${t}: resultados rápidos y concretos:\n\n⚡ Implementación desde el día 1\n🔥 Sin perder tiempo en lo que no funciona\n⏰ Resultados medibles desde la semana 1`,
+        `Por qué ${nombre} resuelve ${t} más rápido:\n\n⚡ Metodología probada y directa\n🔥 Aplicación inmediata, sin rodeos\n⏰ Diseñado para resultados en tiempo real`,
+        `Si actuás AHORA con ${nombre} en ${t}:\n\n⚡ Arrancás con todo listo\n🔥 Tomás ventaja sobre quienes esperan\n⏰ Accedés al mejor precio del lanzamiento`,
+        `${nombre} abierto = tu ventaja en ${t}:\n\n⚡ Implementación desde HOY\n🔥 Resultados que se ven rápido\n⏰ Sin más excusas de "mañana empiezo"`,
+        `No esperes más para resolver ${t}:\n\n⚡ Cada día tiene un costo real\n🔥 ${nombre} está disponible AHORA\n⏰ El acceso es por tiempo limitado`
+      ],
+      educativo: [
+        `Lo que ${nombre} te enseña sobre ${t}:\n\n📚 El método completo paso a paso\n💡 Por qué funciona y cómo aplicarlo\n🎯 Métricas para medir tu avance real`,
+        `Aprendizajes clave de ${nombre} sobre ${t}:\n\n📚 Framework probado con casos reales\n💡 Estrategias aplicables desde el inicio\n🎯 Plan de implementación personalizado`,
+        `Lo que la ciencia dice sobre ${t} y ${nombre}:\n\n📚 Metodología basada en evidencia\n💡 Aplicación práctica con resultados documentados\n🎯 Sistema que escala con tu crecimiento`,
+        `Dentro de ${nombre} encontrarás sobre ${t}:\n\n📚 Módulos estructurados y progresivos\n💡 Material práctico con aplicación directa\n🎯 Sistema de seguimiento de resultados`,
+        `Por qué ${nombre} es la mejor decisión para ${t}:\n\n📚 Contenido validado con resultados reales\n💡 Acceso a estrategias que funcionan\n🎯 Claridad total sobre cómo avanzar`
+      ]
     };
 
-    const slide3s = {
-      expectativa: `¿Te ha pasado?\n\n→ Intentas avanzar y algo siempre te detiene\n→ Sientes que te falta una pieza clave\n→ Ves a otras personas lograr lo que tú quieres\n\nNo es suerte. Es sistema.`,
-      deseo:       `El problema real no es:\n\n✗ Falta de ganas\n✗ No tener suficiente tiempo\n✗ No ser suficiente\n\nEl problema es no tener el método correcto para ${d50}.`,
-      urgencia:    `Quienes deciden rápido obtienen:\n\n→ Acceso prioritario desde el inicio\n→ Mejores resultados más rápido\n→ La energía del comienzo\n\nQuienes esperan... pierden todo eso.`,
-      cierre:      `Lo que ${nombre} NO es:\n\n✗ Otro curso genérico sin aplicación\n✗ Información que ya viste gratis\n✗ Una promesa sin respaldo real\n\nLo que SÍ es → siguiente slide`
-    };
-
-    const slide4s = {
-      expectativa: `Por eso viene ${nombre}.\n\nUn sistema diseñado específicamente para ${d80}.\n\nNo genérico. No teórico.\nReal y aplicable desde el día 1.`,
-      deseo:       `Con ${nombre} tendrás:\n\n✓ Un método claro y paso a paso\n✓ Las herramientas exactas que necesitas\n✓ El acompañamiento correcto\n\nTodo en un solo lugar.`,
-      urgencia:    `${nombre} resuelve exactamente esto:\n\n→ Claridad inmediata sobre qué hacer primero\n→ Sistema probado que funciona\n→ Resultados visibles desde el inicio\n\nPero el acceso cierra pronto.`,
-      cierre:      `${nombre} ES:\n\n✓ Sistema completo para ${d50}\n✓ Contenido práctico y aplicable\n✓ Método probado con resultados reales\n\nEsto es lo que te llevas.`
-    };
-
-    const slide5s = {
-      empoderador: {
-        expectativa: `Cuando ${nombre} llegue, podrás:\n\n💪 Avanzar con confianza real\n🎯 Tener claridad sobre tu siguiente paso\n✨ Crear el negocio o resultado que mereces\n\nEsto es lo que mereces lograr.`,
-        deseo:       `Esto es lo que logran quienes trabajan con ${nombre}:\n\n💪 Resultados reales y medibles\n🎯 Método claro sin adivinar\n✨ Confianza para avanzar sin frenos internos`,
-        urgencia:    `Quienes entran ahora a ${nombre} van a:\n\n💪 Tomar ventaja real desde el inicio\n🎯 Implementar desde el primer día\n⚡ Ver resultados antes que nadie más`,
-        cierre:      `Lo que cambia cuando entras a ${nombre}:\n\n💪 De la confusión → a la claridad total\n🎯 Del "quiero" → al "ya lo estoy logrando"\n✨ Del statu quo → a los resultados que mereces`
-      },
-      cercano: {
-        expectativa: `Lo que quiero para ti con ${nombre}:\n\n🤍 Que dejes de sentirte estancada\n✨ Que tengas un plan claro de verdad\n💬 Que no sientas que estás sola en esto`,
-        deseo:       `Con ${nombre}, imagina:\n\n🤍 Tener exactamente lo que necesitas\n✨ Avanzar sin tener que adivinar\n💬 Sentirte acompañada en cada paso`,
-        urgencia:    `Si entras a ${nombre} ahora:\n\n🤍 Te ahorras semanas de prueba y error\n✨ Empiezas con todo preparado y listo\n💬 Tienes apoyo real desde el día 1`,
-        cierre:      `Ya adentro de ${nombre} vas a:\n\n🤍 Sentirte segura en cada decisión\n✨ Ver resultados que puedes compartir\n💬 Ser parte de una comunidad real`
-      },
-      urgente: {
-        expectativa: `${nombre} viene con:\n\n⚡ Sistema de implementación rápida\n🔥 Resultados medibles desde la semana 1\n⏰ Sin perder tiempo en lo que no funciona`,
-        deseo:       `Por qué ${nombre} genera resultados:\n\n⚡ Metodología probada y directa\n🔥 Aplicación inmediata desde el inicio\n⏰ Diseñado para resultados en tiempo real`,
-        urgencia:    `Si actúas AHORA en ${nombre}:\n\n⚡ Acceso inmediato desde hoy\n🔥 Ventaja clara sobre quienes esperan\n⏰ Acceso al mejor precio antes del cierre`,
-        cierre:      `${nombre} abierto = tu ventaja competitiva:\n\n⚡ Implementación desde HOY mismo\n🔥 Resultados que se ven rápido\n⏰ Sin más excusas de "mañana empiezo"`
-      },
-      educativo: {
-        expectativa: `Lo que ${nombre} te va a enseñar:\n\n📚 El método completo paso a paso\n💡 Por qué funciona y cómo aplicarlo\n🎯 Métricas claras para medir tu avance`,
-        deseo:       `Aprendizajes clave dentro de ${nombre}:\n\n📚 Framework probado con casos reales\n💡 Estrategias aplicables desde el inicio\n🎯 Plan de implementación personalizado`,
-        urgencia:    `Por qué acceder a ${nombre} ahora:\n\n📚 Precio de lanzamiento más accesible\n💡 Acceso a todos los recursos desde el inicio\n🎯 Comunidad activa en su mejor momento`,
-        cierre:      `Dentro de ${nombre} encontrarás:\n\n📚 Módulos estructurados y progresivos\n💡 Material práctico con aplicación directa\n🎯 Sistema de seguimiento de resultados`
-      }
-    };
-
-    const slide6s = {
-      empoderador: `Tú ya sabes que esto es para ti.\n\nLo único que falta es dar el paso.\n\n→ Enlace en bio\n\n💙 ${nombre} te está esperando.`,
-      cercano:     `Si llegaste hasta aquí, es una señal.\n\n¿Hablamos? Escríbeme por DM\no entra directo desde el enlace en bio.\n\n🤍 Te espero adentro de ${nombre}.`,
-      urgente:     `NO LO DEJES PARA DESPUÉS.\n\n→ ENLACE EN BIO — AHORA MISMO\n\n⏰ ${nombre} es por tiempo limitado.\n¡Esta es tu última oportunidad!`,
-      educativo:   `Decisión informada = mejor resultado.\n\nYa tienes toda la información.\nEl siguiente paso es tuyo.\n\n→ Enlace en bio para acceder a ${nombre}.`
+    // ── SLIDE 6 (CTA final) — varía por tono + idx ──
+    const SLIDE6S = {
+      empoderador: [
+        `Sabés que esto es para vos.\n\nLo único que falta es dar el paso.\n\n→ Enlace en bio\n\n💙 ${nombre} te está esperando.`,
+        `Cada día que pasa sin resolver ${t} es un día menos de resultados.\n\n→ Enlace en bio para ${nombre}\n\n💪 Tu versión futura ya te lo agradece.`,
+        `Llegaste hasta el slide 6. Eso dice algo sobre vos.\n\nDa el siguiente paso.\n\n→ Enlace en bio — ${nombre} 🚀`,
+        `No hay momento perfecto. Hay decisión.\n\nEsta es tu señal.\n\n→ Enlace en bio para ${nombre}\n\n💙 Te espero adentro.`,
+        `Lo que falta entre donde estás y donde querés estar:\n\nUna decisión. ${nombre}.\n\n→ Enlace en bio 🚀`
+      ],
+      cercano: [
+        `Si llegaste hasta acá, es una señal.\n\n¿Hablamos? Escribime por DM\no entrá directo desde el enlace en bio.\n\n🤍 Te espero adentro de ${nombre}.`,
+        `¿Este carrusel te resonó? Entonces ${nombre} es para vos.\n\n→ Enlace en bio\n\n💬 Y si tenés dudas, escribime — te respondo hoy.`,
+        `Guardá este carrusel para volver a leerlo.\n\nY cuando estés lista, el enlace de ${nombre} te espera en bio.\n\n🤍 Sin presiones — cuando vos decidas.`,
+        `No tenés que decidir sola.\n\nEscribime por DM y te cuento todo sobre ${nombre} para tu caso específico.\n\n💬 Estoy aquí para vos.`,
+        `¿Cuál slide te llegó más?\n\nCuéntame en comentarios. Y si ${nombre} te interesa, el enlace está en bio.\n\n🤍 Te espero.`
+      ],
+      urgente: [
+        `NO LO DEJÉS PARA DESPUÉS.\n\n→ ENLACE EN BIO — AHORA MISMO\n\n⏰ ${nombre} es por tiempo limitado.\n¡Esta es tu oportunidad!`,
+        `Cada minuto que tardás, alguien más está entrando a ${nombre}.\n\n→ ENLACE EN BIO\n\n⚡ ¡AHORA O NUNCA!`,
+        `${tc} resuelto + ${nombre} = resultados.\n\nPero hay que actuar YA.\n\n→ ENLACE EN BIO — acceso limitado 🔥`,
+        `¿Hasta cuándo vas a esperar para resolver ${t}?\n\n→ ENLACE EN BIO para ${nombre}\n\n⏰ El tiempo se acaba. ¡AHORA!`,
+        `ÚLTIMO AVISO: ${nombre} cierra pronto.\n\nNO. LO. DEJÉS. PARA. DESPUÉS.\n\n→ ENLACE EN BIO ⚡`
+      ],
+      educativo: [
+        `Decisión informada = mejor resultado.\n\nYa tenés toda la información sobre ${t}.\nEl siguiente paso es tuyo.\n\n→ Enlace en bio para ${nombre}.`,
+        `Ahora que entendés ${t}, el próximo paso es claro.\n\n${nombre} te da el sistema completo.\n\n→ Enlace en bio para más información.`,
+        `Información + sistema + acción = resultados.\n\nYa tenés la información sobre ${t}.\n${nombre} te da el sistema.\n\n→ Enlace en bio.`,
+        `¿Querés profundizar en ${t} y cómo ${nombre} lo aplica?\n\nEscribime — te mando información detallada.\n\nO directamente → enlace en bio.`,
+        `El conocimiento sobre ${t} sin acción no genera resultados.\n\n${nombre} convierte ese conocimiento en avance real.\n\n→ Enlace en bio 📚`
+      ]
     };
 
     const emojisTono = { empoderador: '💪✨🚀', cercano: '🤍💬✨', urgente: '⚡🔥⏰', educativo: '📚💡🎯' };
@@ -1426,20 +1493,24 @@
       educativo:   '#aprendizaje #estrategia #resultados'
     };
 
-    const portada = ((portadas[tono] || portadas.empoderador)[faseId]) || tema;
-    const s5      = ((slide5s[tono]  || slide5s.empoderador)[faseId])  || `Con ${nombre} lograrás resultados reales.`;
-    const s6      = (slide6s[tono]   || slide6s.empoderador);
+    const portadasT = PORTADAS[tono] || PORTADAS.empoderador;
+    const slide5sT  = SLIDE5S[tono]  || SLIDE5S.empoderador;
+    const slide6sT  = SLIDE6S[tono]  || SLIDE6S.empoderador;
 
-    const caption = `${emojisTono[tono]} ${portada}\n\n👉 Guarda este carrusel — esta info vale mucho\n💬 ¿Cuál slide te llegó más? Cuéntame\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
+    const portada = portadasT[i];
+    const s5      = slide5sT[i];
+    const s6      = slide6sT[i];
+
+    const caption = `${emojisTono[tono]} ${portada}\n\n👉 Guardá este carrusel — esta info vale mucho\n💬 ¿Cuál slide te llegó más? Contame\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
 
     return {
       slides: [
-        { num: 1, label: 'PORTADA',         texto: portada },
-        { num: 2, label: 'CONTEXTO',        texto: slide2s[faseId] || `${tema}: hay algo que debes saber.` },
-        { num: 3, label: 'EL PROBLEMA',     texto: slide3s[faseId] || `¿Te ha pasado? Sigue leyendo.` },
-        { num: 4, label: 'LA SOLUCIÓN',     texto: slide4s[faseId] || `${nombre} lo resuelve así:` },
+        { num: 1, label: 'PORTADA',          texto: portada },
+        { num: 2, label: 'CONTEXTO',         texto: SLIDE2S[i] },
+        { num: 3, label: 'EL PROBLEMA',      texto: SLIDE3S[i] },
+        { num: 4, label: 'LA SOLUCIÓN',      texto: SLIDE4S[i] },
         { num: 5, label: 'LO QUE LOGRARÁS', texto: s5 },
-        { num: 6, label: 'SIGUIENTE PASO',  texto: s6 }
+        { num: 6, label: 'SIGUIENTE PASO',   texto: s6 }
       ],
       caption
     };
@@ -1468,8 +1539,8 @@
           const formato = getFormato(tipoContenido, i);
           const esReel  = formato.includes('Reel');
           const contenido = esReel
-            ? generarContenidoReel(nombre, descripcion, post.tema, faseId, tono)
-            : generarContenidoCarrusel(nombre, descripcion, post.tema, faseId, tono);
+            ? generarContenidoReel(nombre, descripcion, post.tema, faseId, tono, i)
+            : generarContenidoCarrusel(nombre, descripcion, post.tema, faseId, tono, i);
           return { ...post, formato, contenido, esReel };
         });
       const historias = fase.historias(nombre);
