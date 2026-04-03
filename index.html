@@ -5,2391 +5,681 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Planificador de Lanzamiento — Club Geek</title>
   <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: #ffffff;
+      background: #f8f9ff;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
+      padding: 2.5rem 1rem 4rem;
+      color: #111;
     }
 
-    body.showing-result {
-      align-items: flex-start;
-      padding-top: 2.5rem;
-      padding-bottom: 3rem;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 580px;
-      transition: max-width 0.3s ease;
-    }
-
-    .container.wide {
-      max-width: 720px;
-    }
-
-    /* ── Header ── */
-    .header {
+    .page-header {
       text-align: center;
       margin-bottom: 2.5rem;
     }
-
-    .header .badge {
+    .page-header .badge {
       display: inline-block;
-      background: #1E6FFF;
-      color: #ffffff;
+      background: #F5C518;
+      color: #111;
       font-size: 0.72rem;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: .08em;
       text-transform: uppercase;
-      padding: 0.3rem 0.85rem;
-      border-radius: 100px;
-      margin-bottom: 1rem;
-    }
-
-    .header h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      color: #0a0a0a;
-      line-height: 1.2;
-      margin-bottom: 0.5rem;
-    }
-
-    .header h1 span { color: #1E6FFF; }
-
-    .header p {
-      color: #6b7280;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    /* ── Card base ── */
-    .card {
-      background: #ffffff;
-      border: 1.5px solid #e5e7eb;
+      padding: 4px 12px;
       border-radius: 20px;
-      padding: 2.5rem 2rem;
-      box-shadow: 0 8px 40px rgba(30, 111, 255, 0.08);
+      margin-bottom: .75rem;
+    }
+    .page-header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: #1E6FFF;
+      line-height: 1.2;
+    }
+    .page-header p {
+      margin-top: .5rem;
+      color: #555;
+      font-size: .97rem;
     }
 
-    /* ── Form ── */
-    .form-group { margin-bottom: 1.5rem; }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 30px rgba(30,111,255,.08);
+      padding: 2.2rem 2rem;
+      max-width: 720px;
+      margin: 0 auto 2.5rem;
+    }
 
-    label {
+    .section-title {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #1E6FFF;
+      margin-bottom: 1.2rem;
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: #111827;
-      margin-bottom: 0.5rem;
+      gap: .5rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e8eeff;
     }
 
-    label .icon { font-size: 1rem; }
+    .form-grid {
+      display: grid;
+      gap: 1.2rem;
+    }
+    .form-grid.two-col {
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 560px) {
+      .form-grid.two-col { grid-template-columns: 1fr; }
+      .card { padding: 1.5rem 1.2rem; }
+    }
+
+    label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: .4rem;
+    }
+    label span.req { color: #1E6FFF; }
 
     input[type="text"],
     input[type="date"],
     textarea,
     select {
       width: 100%;
-      padding: 0.8rem 1rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      color: #111827;
-      background: #f9fafb;
-      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-      outline: none;
-      appearance: none;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #1E6FFF;
-      background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(30, 111, 255, 0.1);
-    }
-
-    textarea { resize: vertical; min-height: 100px; }
-
-    /* radio pills — semanas */
-    .radio-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.6rem;
-    }
-
-    .radio-pill input[type="radio"] { display: none; }
-
-    .radio-pill label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.65rem 0.5rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #f9fafb;
-      color: #6b7280;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      user-select: none;
-      gap: 0.1rem;
-      margin-bottom: 0;
-    }
-
-    .radio-pill label .num {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #111827;
-      line-height: 1;
-    }
-
-    .radio-pill input[type="radio"]:checked + label {
-      background: #1E6FFF;
-      border-color: #1E6FFF;
-      color: #ffffff;
-    }
-
-    .radio-pill input[type="radio"]:checked + label .num { color: #ffffff; }
-
-    .radio-pill label:hover { border-color: #1E6FFF; background: #eef4ff; }
-    .radio-pill input[type="radio"]:checked + label:hover { background: #1E6FFF; }
-
-    /* radio pills — red social */
-    .social-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
-    }
-
-    .social-pill input[type="radio"] { display: none; }
-
-    .social-pill label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.8rem 0.5rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #f9fafb;
-      color: #6b7280;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      user-select: none;
-      gap: 0.3rem;
-      margin-bottom: 0;
-    }
-
-    .social-pill label .social-icon { font-size: 1.6rem; line-height: 1; }
-
-    .social-pill input[type="radio"]:checked + label {
-      border-color: #F5C518;
-      background: #fffbe6;
-      color: #92400e;
-      box-shadow: 0 0 0 3px rgba(245, 197, 24, 0.2);
-    }
-
-    .social-pill label:hover { border-color: #F5C518; background: #fffbe6; }
-
-    /* divider */
-    .divider { height: 1px; background: #f3f4f6; margin: 1.8rem 0; }
-
-    /* submit button */
-    .btn-submit {
-      width: 100%;
-      padding: 1rem;
-      background: #1E6FFF;
-      color: #ffffff;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      letter-spacing: 0.01em;
-    }
-
-    .btn-submit:hover {
-      background: #155de0;
-      box-shadow: 0 6px 20px rgba(30, 111, 255, 0.35);
-    }
-
-    .btn-submit:active { transform: scale(0.98); }
-    .btn-submit .accent { color: #F5C518; font-size: 1.1rem; }
-
-    .hint { font-size: 0.78rem; color: #9ca3af; margin-top: 0.35rem; }
-
-    /* radio pills — contenido */
-    .content-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
-    }
-
-    .content-pill input[type="radio"] { display: none; }
-
-    .content-pill label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.8rem 0.5rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #f9fafb;
-      color: #6b7280;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      user-select: none;
-      gap: 0.3rem;
-      margin-bottom: 0;
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    .content-pill label .content-icon { font-size: 1.5rem; line-height: 1; }
-
-    .content-pill input[type="radio"]:checked + label {
-      background: #eef4ff;
-      border-color: #1E6FFF;
-      color: #1E6FFF;
-      box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.15);
-    }
-
-    .content-pill label:hover { border-color: #1E6FFF; background: #eef4ff; }
-
-    /* stories info box */
-    .stories-info {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-      padding: 0.65rem 1rem;
-      background: #f0fdf4;
-      border: 1.5px solid #bbf7d0;
+      padding: .65rem .9rem;
+      border: 1.5px solid #dde4ff;
       border-radius: 10px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #166534;
+      font-size: .95rem;
+      font-family: inherit;
+      color: #111;
+      background: #fafbff;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
     }
-
-    /* historias section en resultado */
-    .historias-section {
-      margin-top: 1.25rem;
-      border: 1.5px solid #bbf7d0;
-      border-radius: 14px;
-      overflow: hidden;
+    input:focus, textarea:focus, select:focus {
+      border-color: #1E6FFF;
+      box-shadow: 0 0 0 3px rgba(30,111,255,.12);
+      background: #fff;
     }
+    textarea { resize: vertical; min-height: 90px; }
 
-    .historias-header {
+    .radio-group, .check-group {
       display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.7rem 1rem;
-      background: #f0fdf4;
-      border-bottom: 1.5px solid #bbf7d0;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #166534;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
+      flex-wrap: wrap;
+      gap: .6rem;
     }
-
-    .historias-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0;
+    .radio-group label, .check-group label {
+      margin: 0;
+      cursor: pointer;
     }
-
-    .historia-item {
-      display: grid;
-      grid-template-columns: 72px 1fr;
-      gap: 0.75rem;
-      align-items: start;
-      padding: 0.65rem 1rem;
-      border-bottom: 1px solid #f0fdf4;
+    .radio-group input[type="radio"],
+    .check-group input[type="checkbox"] {
+      display: none;
     }
-
-    .historia-item:last-child { border-bottom: none; }
-
-    .historia-dia {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #166534;
-      background: #dcfce7;
-      border-radius: 6px;
-      padding: 0.2rem 0.4rem;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .historia-tipo {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #059669;
-      margin-bottom: 0.15rem;
-    }
-
-    .historia-sug {
-      font-size: 0.82rem;
-      color: #374151;
-      line-height: 1.45;
-    }
-
-    /* ── RESULT SECTION ── */
-    .result-section { display: none; }
-    .result-section.visible { display: block; }
-
-    /* back button */
-    .btn-back {
+    .radio-group label span,
+    .check-group label span {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      background: none;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 0.5rem 1rem;
-      font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #374151;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      margin-bottom: 1.5rem;
+      gap: .35rem;
+      padding: .5rem 1rem;
+      border-radius: 30px;
+      border: 1.5px solid #dde4ff;
+      font-size: .87rem;
+      font-weight: 500;
+      background: #fafbff;
+      color: #444;
+      transition: all .18s;
+      user-select: none;
     }
-
-    .btn-back:hover { border-color: #1E6FFF; color: #1E6FFF; background: #eef4ff; }
-
-    /* result header */
-    .result-heading { margin-bottom: 1.5rem; }
-
-    .result-heading h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #0a0a0a;
-      line-height: 1.25;
-      margin-bottom: 0.3rem;
-    }
-
-    .result-heading h2 span { color: #1E6FFF; }
-
-    .result-heading p { color: #6b7280; font-size: 0.9rem; }
-
-    /* summary card */
-    .summary-card {
+    .radio-group input[type="radio"]:checked + span,
+    .check-group input[type="checkbox"]:checked + span {
       background: #1E6FFF;
-      border-radius: 20px;
-      padding: 1.5rem 1.75rem;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 8px 30px rgba(30, 111, 255, 0.3);
+      border-color: #1E6FFF;
+      color: #fff;
+    }
+    .radio-group label:hover span,
+    .check-group label:hover span {
+      border-color: #1E6FFF;
+      color: #1E6FFF;
+    }
+    .radio-group input[type="radio"]:checked + span:hover,
+    .check-group input[type="checkbox"]:checked + span:hover {
+      color: #fff;
     }
 
-    .summary-item {}
+    .hint { font-size: .78rem; color: #888; margin-top: .3rem; }
 
-    .summary-label {
-      display: block;
-      font-size: 0.72rem;
+    .btn-generate {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      width: 100%;
+      padding: .9rem 1.5rem;
+      background: #1E6FFF;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
       font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.65);
-      margin-bottom: 0.3rem;
+      cursor: pointer;
+      margin-top: .5rem;
+      transition: background .2s, transform .1s, box-shadow .2s;
+      box-shadow: 0 4px 18px rgba(30,111,255,.3);
     }
+    .btn-generate:hover { background: #1558d9; box-shadow: 0 6px 22px rgba(30,111,255,.38); }
+    .btn-generate:active { transform: scale(.98); }
+    .btn-generate:disabled { background: #a0b8ff; box-shadow: none; cursor: not-allowed; }
 
-    .summary-value {
-      display: block;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #ffffff;
-      line-height: 1.3;
+    .spinner {
+      width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .summary-value.highlight { color: #F5C518; }
+    /* ── Results ── */
+    #results { max-width: 720px; margin: 0 auto; }
 
-    /* week card */
-    .week-card {
-      border: 1.5px solid #e5e7eb;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-    }
-
-    .week-header {
+    .results-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.1rem 1.5rem;
-      border-bottom: 1.5px solid #e5e7eb;
-      background: var(--phase-bg, #f9fafb);
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 1rem;
+      margin-bottom: 1.8rem;
     }
-
-    .week-meta {}
-
-    .week-number {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #6b7280;
-      margin-bottom: 0.15rem;
+    .results-header h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #111;
     }
+    .results-header h2 span { color: #1E6FFF; }
 
-    .week-dates {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .phase-badge {
-      display: inline-flex;
+    .btn-copy-all {
+      display: flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.35rem 0.85rem;
-      border-radius: 100px;
-      font-size: 0.8rem;
+      gap: .4rem;
+      padding: .55rem 1.1rem;
+      background: #F5C518;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      font-size: .85rem;
       font-weight: 700;
-      background: var(--phase-color, #1E6FFF);
-      color: #ffffff;
-      white-space: nowrap;
+      cursor: pointer;
+      transition: background .18s;
     }
+    .btn-copy-all:hover { background: #e0b10f; }
 
-    .week-body { padding: 1.25rem 1.5rem; }
-
-    .week-objetivo {
-      font-size: 0.88rem;
-      color: #374151;
-      line-height: 1.55;
-      padding: 0.85rem 1rem;
-      background: #f9fafb;
-      border-radius: 12px;
-      border-left: 3px solid var(--phase-color, #1E6FFF);
-      margin-bottom: 1.25rem;
+    .week-block {
+      margin-bottom: 2rem;
     }
-
-    .week-objetivo strong {
-      color: var(--phase-color, #1E6FFF);
-      font-weight: 700;
-    }
-
-    /* posts grid */
-    .posts-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 0.85rem;
+    .week-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #1E6FFF;
+      background: #eef3ff;
+      border-left: 4px solid #1E6FFF;
+      padding: .55rem 1rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1rem;
     }
 
     .post-card {
-      border: 1.5px solid #e5e7eb;
+      background: #fff;
       border-radius: 14px;
-      padding: 1rem 1.1rem;
-      background: #ffffff;
+      box-shadow: 0 2px 16px rgba(30,111,255,.07);
+      border: 1px solid #e8eeff;
+      margin-bottom: 1rem;
+      overflow: hidden;
     }
-
-    .post-top {
+    .post-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.55rem;
-      gap: 0.5rem;
+      padding: .8rem 1.1rem;
+      background: #f4f7ff;
+      border-bottom: 1px solid #e8eeff;
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
       flex-wrap: wrap;
     }
-
-    .post-format {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-      font-size: 0.75rem;
+    .tag {
+      display: inline-block;
+      font-size: .72rem;
       font-weight: 700;
-      color: var(--phase-color, #1E6FFF);
-      background: var(--phase-bg, #eef4ff);
-      padding: 0.2rem 0.6rem;
-      border-radius: 100px;
-      border: 1px solid var(--phase-color, #1E6FFF);
-    }
-
-    .post-number {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #9ca3af;
-      letter-spacing: 0.05em;
+      padding: 3px 9px;
+      border-radius: 20px;
       text-transform: uppercase;
+      letter-spacing: .05em;
     }
+    .tag-reel { background: #ffe8f0; color: #c0185a; }
+    .tag-carousel { background: #fff3cd; color: #7a5c00; }
+    .tag-day { background: #e8eeff; color: #1E6FFF; }
 
-    .post-tema {
-      font-size: 0.9rem;
+    .post-body { padding: 1rem 1.1rem; }
+
+    .content-section { margin-bottom: 1rem; }
+    .content-label {
+      font-size: .75rem;
       font-weight: 700;
-      color: #111827;
-      margin-bottom: 0.5rem;
-      line-height: 1.3;
-    }
-
-    .post-hook {
-      font-size: 0.85rem;
-      color: #4b5563;
-      line-height: 1.55;
-      background: #f9fafb;
-      border-radius: 10px;
-      padding: 0.65rem 0.85rem;
-      border-left: 2.5px solid #e5e7eb;
-      font-style: italic;
-    }
-
-    /* copy button */
-    .btn-copy {
-      width: 100%;
-      padding: 1rem;
-      background: #ffffff;
-      color: #1E6FFF;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
-      border: 2px solid #1E6FFF;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .btn-copy:hover {
-      background: #eef4ff;
-      box-shadow: 0 4px 16px rgba(30, 111, 255, 0.15);
-    }
-
-    .btn-copy:active { transform: scale(0.98); }
-
-    .btn-copy.copied {
-      background: #F5C518;
-      border-color: #F5C518;
-      color: #0a0a0a;
-    }
-
-    /* toast */
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(6px);
-      background: #0a0a0a;
-      color: #ffffff;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.75rem 1.4rem;
-      border-radius: 100px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      white-space: nowrap;
-      z-index: 999;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* validation error */
-    .field-error {
-      font-size: 0.78rem;
-      color: #dc2626;
-      margin-top: 0.35rem;
-      display: none;
-    }
-
-    input.invalid, textarea.invalid {
-      border-color: #dc2626 !important;
-      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08) !important;
-    }
-
-    /* ── Tone pills ── */
-    .tono-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.6rem;
-    }
-
-    .tono-pill input[type="radio"] { display: none; }
-
-    .tono-pill label {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 0.85rem 1rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 12px;
-      cursor: pointer;
-      background: #f9fafb;
-      color: #6b7280;
-      font-size: 0.82rem;
-      font-weight: 600;
-      transition: all 0.2s;
-      user-select: none;
-      gap: 0.15rem;
-      margin-bottom: 0;
-      line-height: 1.3;
-    }
-
-    .tono-pill label .tono-icon { font-size: 1.25rem; line-height: 1; margin-bottom: 0.15rem; }
-    .tono-pill label .tono-nombre { font-size: 0.88rem; font-weight: 700; color: #111827; }
-    .tono-pill label .tono-desc { font-size: 0.74rem; color: #9ca3af; }
-
-    .tono-pill input[type="radio"]:checked + label {
-      background: #eef4ff;
-      border-color: #1E6FFF;
-      box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.15);
-    }
-    .tono-pill input[type="radio"]:checked + label .tono-nombre { color: #1E6FFF; }
-    .tono-pill input[type="radio"]:checked + label .tono-desc { color: #4b8fff; }
-    .tono-pill label:hover { border-color: #1E6FFF; background: #eef4ff; }
-
-    /* ── Post content expandido ── */
-    .post-content { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.45rem; }
-
-    /* Reel — guión */
-    .script-section {
-      border-radius: 10px;
-      padding: 0.7rem 0.9rem;
-    }
-    .script-section.s-intro    { background: #fff8ec; border: 1.5px solid #fde68a; }
-    .script-section.s-problema { background: #fef2f2; border: 1.5px solid #fecaca; }
-    .script-section.s-solucion { background: #f0fdf4; border: 1.5px solid #bbf7d0; }
-    .script-section.s-cta      { background: #eef4ff; border: 1.5px solid #bfdbfe; }
-    .script-label {
-      font-size: 0.67rem;
-      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 0.3rem;
+      letter-spacing: .08em;
+      color: #888;
+      margin-bottom: .4rem;
     }
-    .s-intro    .script-label { color: #92400e; }
-    .s-problema .script-label { color: #991b1b; }
-    .s-solucion .script-label { color: #166534; }
-    .s-cta      .script-label { color: #1e40af; }
-    .script-text {
-      font-size: 0.84rem;
-      color: #374151;
-      line-height: 1.58;
-      white-space: pre-line;
+    .content-text {
+      font-size: .9rem;
+      line-height: 1.6;
+      color: #222;
+      white-space: pre-wrap;
+      background: #f8f9ff;
+      border-radius: 8px;
+      padding: .7rem .9rem;
     }
 
-    /* Carrusel — slides */
+    .slides-list { display: flex; flex-direction: column; gap: .5rem; }
     .slide-item {
       display: grid;
-      grid-template-columns: 36px 1fr;
-      gap: 0.55rem;
+      grid-template-columns: 28px 1fr;
+      gap: .5rem;
       align-items: start;
-      padding: 0.65rem 0.75rem;
-      border-radius: 10px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-    }
-    .slide-item.portada { background: #1E6FFF; border-color: #1E6FFF; }
-    .slide-num-col { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; padding-top: 0.1rem; }
-    .slide-num {
-      font-size: 0.68rem;
-      font-weight: 800;
-      color: #9ca3af;
-      text-align: center;
-      line-height: 1;
-    }
-    .slide-item.portada .slide-num { color: rgba(255,255,255,0.6); }
-    .slide-label {
-      font-size: 0.62rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #9ca3af;
-      margin-bottom: 0.2rem;
-    }
-    .slide-item.portada .slide-label { color: rgba(255,255,255,0.6); }
-    .slide-text {
-      font-size: 0.83rem;
-      color: #374151;
-      line-height: 1.52;
-      white-space: pre-line;
-    }
-    .slide-item.portada .slide-text { color: #fff; font-weight: 700; font-size: 0.88rem; }
-
-    /* Caption */
-    .post-caption {
-      margin-top: 0.25rem;
-      padding: 0.8rem 0.9rem;
-      background: #fafafa;
-      border: 1.5px dashed #d1d5db;
-      border-radius: 10px;
-    }
-    .caption-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.35rem;
-    }
-    .caption-label {
-      font-size: 0.67rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #6b7280;
-    }
-    .caption-text {
-      font-size: 0.83rem;
-      color: #374151;
-      line-height: 1.6;
-      white-space: pre-line;
-    }
-    .btn-copy-caption {
-      background: none;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      padding: 0.2rem 0.55rem;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: #6b7280;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-      white-space: nowrap;
-    }
-    .btn-copy-caption:hover { border-color: #1E6FFF; color: #1E6FFF; background: #eef4ff; }
-    .btn-copy-caption.copied { border-color: #059669; color: #059669; background: #f0fdf4; }
-
-    /* Tono badge en resultado */
-    .tono-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      background: #eef4ff;
-      color: #1E6FFF;
-      border: 1px solid #bfdbfe;
-    }
-
-    /* ── Loading state ── */
-    .loading-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 380px;
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 20px;
-      background: #ffffff;
-      box-shadow: 0 8px 40px rgba(30, 111, 255, 0.08);
-    }
-
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3.5px solid #e5e7eb;
-      border-top-color: #1E6FFF;
-      border-radius: 50%;
-      animation: giro 0.75s linear infinite;
-      margin-bottom: 1.75rem;
-    }
-
-    @keyframes giro { to { transform: rotate(360deg); } }
-
-    .loading-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      color: #0a0a0a;
-      margin-bottom: 0.5rem;
-    }
-
-    .loading-sub {
-      font-size: 0.92rem;
-      color: #374151;
-      line-height: 1.55;
-      margin-bottom: 0.5rem;
-    }
-
-    .loading-hint {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      max-width: 300px;
-      line-height: 1.5;
-    }
-
-    .loading-dots { display: inline-flex; gap: 4px; margin-left: 3px; }
-    .loading-dots span {
-      width: 5px; height: 5px;
-      background: #1E6FFF; border-radius: 50%;
-      animation: pulso 1.2s ease infinite;
-    }
-    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes pulso {
-      0%, 80%, 100% { transform: scale(0.6); opacity: 0.35; }
-      40%           { transform: scale(1);   opacity: 1; }
-    }
-
-    /* ── Error state ── */
-    .error-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding: 3rem 2rem;
-      border: 1.5px solid #fecaca;
-      border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 8px 40px rgba(220, 38, 38, 0.06);
-    }
-
-    .error-icon { font-size: 2.25rem; margin-bottom: 1rem; }
-
-    .error-card h2 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #0a0a0a;
-      margin-bottom: 0.5rem;
-    }
-
-    .error-detail {
-      font-size: 0.83rem;
-      color: #6b7280;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
+      background: #f8f9ff;
       border-radius: 8px;
-      padding: 0.6rem 1rem;
-      margin-bottom: 1.5rem;
-      max-width: 360px;
-      line-height: 1.5;
+      padding: .6rem .8rem;
     }
-
-    .error-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-      width: 100%;
-      max-width: 300px;
-    }
-
-    .btn-reintentar {
-      padding: 0.85rem;
+    .slide-num {
+      width: 28px; height: 28px;
       background: #1E6FFF;
       color: #fff;
-      font-family: inherit;
-      font-size: 0.9rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
+      border-radius: 50%;
+      font-size: .72rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .slide-text { font-size: .88rem; line-height: 1.55; color: #222; }
+
+    .caption-box {
+      background: #fffbea;
+      border: 1.5px solid #F5C518;
+      border-radius: 10px;
+      padding: .75rem .9rem;
+      font-size: .9rem;
+      line-height: 1.65;
+      color: #222;
+      white-space: pre-wrap;
     }
 
-    .btn-reintentar:hover { background: #155de0; }
-
-    .btn-fallback {
-      padding: 0.85rem;
-      background: #fff;
-      color: #374151;
-      font-family: inherit;
-      font-size: 0.88rem;
-      font-weight: 600;
-      border: 1.5px solid #e5e7eb;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .btn-fallback:hover { border-color: #1E6FFF; color: #1E6FFF; }
-
-    .btn-volver-form {
-      background: none;
-      border: none;
-      font-family: inherit;
-      font-size: 0.83rem;
-      color: #9ca3af;
-      cursor: pointer;
-      text-decoration: underline;
-      padding: 0.25rem;
-    }
-
-    .btn-volver-form:hover { color: #374151; }
-
-    /* ── Insignia IA en resultado ── */
-    .ia-badge {
+    .btn-copy-caption {
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      padding: 0.25rem 0.65rem;
-      border-radius: 100px;
-      font-size: 0.72rem;
+      gap: .35rem;
+      padding: .38rem .85rem;
+      background: #F5C518;
+      color: #111;
+      border: none;
+      border-radius: 6px;
+      font-size: .78rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #fff;
-      margin-left: 0.5rem;
-      vertical-align: middle;
+      cursor: pointer;
+      transition: background .18s;
+    }
+    .btn-copy-caption:hover { background: #e0b10f; }
+    .btn-copy-caption.copied { background: #22c55e; color: #fff; }
+
+    .caption-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: .5rem;
     }
 
-    @media (max-width: 560px) {
-      .card { padding: 1.75rem 1.25rem; }
-      .header h1 { font-size: 1.65rem; }
-      .summary-card { grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1.25rem; }
-      .week-body { padding: 1rem; }
-      .week-header { padding: 1rem; }
+    .error-box {
+      background: #fff0f0;
+      border: 1.5px solid #fca5a5;
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+      color: #b91c1c;
+      font-size: .93rem;
+      display: flex;
+      gap: .7rem;
+      align-items: flex-start;
     }
+    .error-box svg { flex-shrink: 0; margin-top: 2px; }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <div class="container" id="main-container">
+<div class="page-header">
+  <div class="badge">Club Geek</div>
+  <h1>Planificador de Lanzamiento</h1>
+  <p>Genera tu plan de contenido semana a semana con IA</p>
+</div>
 
-    <!-- ══ HEADER ══ -->
-    <div class="header" id="main-header">
-      <span class="badge">Club Geek</span>
-      <h1>Planificador de<br><span>Lanzamiento</span></h1>
-      <p>Crea tu estrategia de contenido semana a semana<br>para lanzar con impacto en redes sociales.</p>
-    </div>
+<!-- FORMULARIO -->
+<div class="card" id="form-card">
+  <form id="launch-form" novalidate>
 
-    <!-- ══ FORMULARIO ══ -->
-    <div id="form-section">
-      <div class="card">
-        <form id="launch-form" novalidate>
-
-          <div class="form-group">
-            <label for="product-name">
-              <span class="icon">🚀</span> Nombre del producto o servicio
-            </label>
-            <input type="text" id="product-name" name="product_name"
-              placeholder="Ej: Curso de Marketing Digital" required />
-            <p class="field-error" id="err-name">Escribe el nombre del producto.</p>
-          </div>
-
-          <div class="form-group">
-            <label for="description">
-              <span class="icon">📝</span> Descripción breve
-            </label>
-            <textarea id="description" name="description"
-              placeholder="¿Qué es y para quién está dirigido? Ej: Un curso online para emprendedoras que quieren vender más en Instagram sin gastar en publicidad."
-              required></textarea>
-            <p class="hint">Cuanto más específico, mejor será tu plan de contenido.</p>
-            <p class="field-error" id="err-desc">Escribe una descripción breve.</p>
-          </div>
-
-          <div class="form-group">
-            <label for="launch-date">
-              <span class="icon">📅</span> Fecha de lanzamiento
-            </label>
-            <input type="date" id="launch-date" name="launch_date" required />
-            <p class="field-error" id="err-date">Selecciona la fecha de lanzamiento.</p>
-            <p class="field-error" id="err-date-pasada">La fecha seleccionada ya pasó, por favor elige una fecha futura.</p>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="form-group">
-            <label><span class="icon">⏳</span> Semanas de preventa</label>
-            <div class="radio-grid">
-              <div class="radio-pill">
-                <input type="radio" id="weeks-1" name="weeks" value="1" />
-                <label for="weeks-1"><span class="num">1</span>semana</label>
-              </div>
-              <div class="radio-pill">
-                <input type="radio" id="weeks-2" name="weeks" value="2" checked />
-                <label for="weeks-2"><span class="num">2</span>semanas</label>
-              </div>
-              <div class="radio-pill">
-                <input type="radio" id="weeks-3" name="weeks" value="3" />
-                <label for="weeks-3"><span class="num">3</span>semanas</label>
-              </div>
-              <div class="radio-pill">
-                <input type="radio" id="weeks-4" name="weeks" value="4" />
-                <label for="weeks-4"><span class="num">4</span>semanas</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label><span class="icon">📲</span> Red social principal</label>
-            <div class="social-grid">
-              <div class="social-pill">
-                <input type="radio" id="social-instagram" name="social" value="instagram" checked />
-                <label for="social-instagram">
-                  <span class="social-icon">📸</span>Instagram
-                </label>
-              </div>
-              <div class="social-pill">
-                <input type="radio" id="social-tiktok" name="social" value="tiktok" />
-                <label for="social-tiktok">
-                  <span class="social-icon">🎵</span>TikTok
-                </label>
-              </div>
-              <div class="social-pill">
-                <input type="radio" id="social-facebook" name="social" value="facebook" />
-                <label for="social-facebook">
-                  <span class="social-icon">💬</span>Facebook
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="form-group">
-            <label><span class="icon">📅</span> Frecuencia de publicación</label>
-            <div class="radio-grid">
-              <div class="radio-pill">
-                <input type="radio" id="freq-2" name="frecuencia" value="2" checked />
-                <label for="freq-2"><span class="num">2</span>por semana</label>
-              </div>
-              <div class="radio-pill">
-                <input type="radio" id="freq-3" name="frecuencia" value="3" />
-                <label for="freq-3"><span class="num">3</span>por semana</label>
-              </div>
-              <div class="radio-pill">
-                <input type="radio" id="freq-4" name="frecuencia" value="4" />
-                <label for="freq-4"><span class="num">4</span>por semana</label>
-              </div>
-              <div class="radio-pill">
-                <input type="radio" id="freq-5" name="frecuencia" value="5" />
-                <label for="freq-5"><span class="num">5</span>por semana</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label><span class="icon">🎬</span> Tipo de contenido preferido</label>
-            <div class="content-grid">
-              <div class="content-pill">
-                <input type="radio" id="tipo-reels" name="tipo_contenido" value="reels" checked />
-                <label for="tipo-reels"><span class="content-icon">🎬</span>Solo Reels</label>
-              </div>
-              <div class="content-pill">
-                <input type="radio" id="tipo-carruseles" name="tipo_contenido" value="carruseles" />
-                <label for="tipo-carruseles"><span class="content-icon">🖼️</span>Solo Carruseles</label>
-              </div>
-              <div class="content-pill">
-                <input type="radio" id="tipo-combinado" name="tipo_contenido" value="combinado" />
-                <label for="tipo-combinado"><span class="content-icon">✨</span>Reels y<br>Carruseles</label>
-              </div>
-            </div>
-            <div class="stories-info">
-              ⭕ Las historias son diarias y van incluidas en tu plan
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="form-group">
-            <label><span class="icon">🎙️</span> Tono del contenido</label>
-            <div class="tono-grid">
-              <div class="tono-pill">
-                <input type="radio" id="tono-empoderador" name="tono" value="empoderador" checked />
-                <label for="tono-empoderador">
-                  <span class="tono-icon">💪</span>
-                  <span class="tono-nombre">Empoderador</span>
-                  <span class="tono-desc">Inspira y motiva</span>
-                </label>
-              </div>
-              <div class="tono-pill">
-                <input type="radio" id="tono-cercano" name="tono" value="cercano" />
-                <label for="tono-cercano">
-                  <span class="tono-icon">🤝</span>
-                  <span class="tono-nombre">Cercano</span>
-                  <span class="tono-desc">Como hablar con una amiga</span>
-                </label>
-              </div>
-              <div class="tono-pill">
-                <input type="radio" id="tono-urgente" name="tono" value="urgente" />
-                <label for="tono-urgente">
-                  <span class="tono-icon">⚡</span>
-                  <span class="tono-nombre">Urgente</span>
-                  <span class="tono-desc">Genera acción inmediata</span>
-                </label>
-              </div>
-              <div class="tono-pill">
-                <input type="radio" id="tono-educativo" name="tono" value="educativo" />
-                <label for="tono-educativo">
-                  <span class="tono-icon">📚</span>
-                  <span class="tono-nombre">Educativo</span>
-                  <span class="tono-desc">Enseña y genera autoridad</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <button type="submit" class="btn-submit">
-            <span class="accent">★</span> Generar Plan de Lanzamiento
-          </button>
-
-        </form>
+    <div class="section-title">Sobre tu producto</div>
+    <div class="form-grid">
+      <div>
+        <label>Nombre del producto o servicio <span class="req">*</span></label>
+        <input type="text" name="producto" placeholder="Ej: Curso de fotografía para principiantes" required />
+      </div>
+      <div>
+        <label>Descripción breve <span class="req">*</span></label>
+        <textarea name="descripcion" placeholder="Qué es y para quién es. Ej: Un curso online de 4 semanas para personas sin experiencia que quieren aprender a tomar fotos profesionales con su celular." required></textarea>
       </div>
     </div>
 
-    <!-- ══ RESULTADO ══ -->
-    <div id="result-section" class="result-section"></div>
+    <div class="section-title" style="margin-top:1.8rem">Fechas y preventa</div>
+    <div class="form-grid two-col">
+      <div>
+        <label>Fecha de lanzamiento <span class="req">*</span></label>
+        <input type="date" name="fecha_lanzamiento" required />
+      </div>
+      <div>
+        <label>Semanas de preventa <span class="req">*</span></label>
+        <div class="radio-group" style="margin-top:.15rem">
+          <label><input type="radio" name="semanas_preventa" value="1" required /><span>1 semana</span></label>
+          <label><input type="radio" name="semanas_preventa" value="2" /><span>2 semanas</span></label>
+          <label><input type="radio" name="semanas_preventa" value="3" /><span>3 semanas</span></label>
+          <label><input type="radio" name="semanas_preventa" value="4" /><span>4 semanas</span></label>
+        </div>
+      </div>
+    </div>
 
+    <div class="section-title" style="margin-top:1.8rem">Redes sociales</div>
+    <div class="form-grid two-col">
+      <div>
+        <label>Red social principal <span class="req">*</span></label>
+        <div class="radio-group" style="margin-top:.15rem">
+          <label><input type="radio" name="red_social" value="Instagram" required /><span>📸 Instagram</span></label>
+          <label><input type="radio" name="red_social" value="TikTok" /><span>🎵 TikTok</span></label>
+          <label><input type="radio" name="red_social" value="Facebook" /><span>👥 Facebook</span></label>
+        </div>
+      </div>
+      <div>
+        <label>Posts por semana <span class="req">*</span></label>
+        <div class="radio-group" style="margin-top:.15rem">
+          <label><input type="radio" name="frecuencia" value="2" required /><span>2</span></label>
+          <label><input type="radio" name="frecuencia" value="3" /><span>3</span></label>
+          <label><input type="radio" name="frecuencia" value="4" /><span>4</span></label>
+          <label><input type="radio" name="frecuencia" value="5" /><span>5</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid two-col" style="margin-top:1.2rem">
+      <div>
+        <label>Tipo de contenido <span class="req">*</span></label>
+        <div class="radio-group" style="margin-top:.15rem">
+          <label><input type="radio" name="tipo_contenido" value="Solo Reels" required /><span>🎬 Solo Reels</span></label>
+          <label><input type="radio" name="tipo_contenido" value="Solo Carruseles" /><span>🖼️ Solo Carruseles</span></label>
+          <label><input type="radio" name="tipo_contenido" value="Reels y Carruseles" /><span>🎬🖼️ Mix</span></label>
+        </div>
+      </div>
+      <div>
+        <label>Tono de comunicación <span class="req">*</span></label>
+        <div class="radio-group" style="margin-top:.15rem">
+          <label><input type="radio" name="tono" value="Empoderador" required /><span>💪 Empoderador</span></label>
+          <label><input type="radio" name="tono" value="Cercano" /><span>🤗 Cercano</span></label>
+          <label><input type="radio" name="tono" value="Urgente" /><span>⚡ Urgente</span></label>
+          <label><input type="radio" name="tono" value="Educativo" /><span>📚 Educativo</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div id="form-error" class="error-box hidden" style="margin-top:1.2rem">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="form-error-text">Por favor completa todos los campos.</span>
+    </div>
+
+    <button type="submit" class="btn-generate" id="btn-generate" style="margin-top:1.8rem">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Generar plan de lanzamiento
+    </button>
+
+  </form>
+</div>
+
+<!-- RESULTADOS -->
+<div id="results" class="hidden">
+  <div class="results-header">
+    <h2>Tu plan de <span>lanzamiento</span></h2>
+    <button class="btn-copy-all" id="btn-copy-all">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Copiar plan completo
+    </button>
   </div>
+  <div id="results-body"></div>
+</div>
 
-  <script>
-  // ─────────────────────────────────────────────
-  //  API KEY — reemplaza con tu clave de Gemini
-  // ─────────────────────────────────────────────
-  const GEMINI_API_KEY = 'AIzaSyC69s1E6A9nlMj9dOvDhIog4z_sAfO75tc';
+<script>
+const form = document.getElementById('launch-form');
+const btnGenerate = document.getElementById('btn-generate');
+const resultsSection = document.getElementById('results');
+const resultsBody = document.getElementById('results-body');
+const formError = document.getElementById('form-error');
+const formErrorText = document.getElementById('form-error-text');
 
-  // ─────────────────────────────────────────────
-  //  CONFIGURACIÓN
-  // ─────────────────────────────────────────────
-
-  // Formato según tipo de contenido elegido (índice del post en la semana)
-  function getFormato(tipoContenido, idx) {
-    if (tipoContenido === 'reels')      return '🎬 Reel';
-    if (tipoContenido === 'carruseles') return '🖼️ Carrusel';
-    return idx % 2 === 0 ? '🎬 Reel' : '🖼️ Carrusel'; // combinado: alternado
-  }
-
-  const TIPO_LABELS = {
-    reels:      'Solo Reels',
-    carruseles: 'Solo Carruseles',
-    combinado:  'Reels y Carruseles'
+function getFormData() {
+  const fd = new FormData(form);
+  return {
+    producto: fd.get('producto')?.trim(),
+    descripcion: fd.get('descripcion')?.trim(),
+    fecha_lanzamiento: fd.get('fecha_lanzamiento'),
+    semanas_preventa: fd.get('semanas_preventa'),
+    red_social: fd.get('red_social'),
+    frecuencia: fd.get('frecuencia'),
+    tipo_contenido: fd.get('tipo_contenido'),
+    tono: fd.get('tono'),
   };
-
-  const TONOS = {
-    empoderador: { nombre: 'Empoderador', emoji: '💪', desc: 'Inspira y motiva' },
-    cercano:     { nombre: 'Cercano',     emoji: '🤝', desc: 'Como hablar con una amiga' },
-    urgente:     { nombre: 'Urgente',     emoji: '⚡', desc: 'Genera acción inmediata' },
-    educativo:   { nombre: 'Educativo',   emoji: '📚', desc: 'Enseña y genera autoridad' }
-  };
-
-  // ─────────────────────────────────────────────
-  //  GEMINI IA — PROMPT, LLAMADA E INYECCIÓN
-  // ─────────────────────────────────────────────
-
-  function construirPrompt(datos, semanasPlan) {
-    const { nombre, descripcion, social, tono, semanas, frecuencia } = datos;
-
-    const TONOS_LABEL = {
-      empoderador: 'Empoderador (inspira y motiva — frases de poder, celebra la capacidad de la lectora)',
-      cercano:     'Cercano (como hablar con una amiga — tuteo, lenguaje coloquial latinoamericano, cálido)',
-      urgente:     'Urgente (genera acción inmediata — FOMO real, llamados directos, mayúsculas con criterio)',
-      educativo:   'Educativo (enseña y genera autoridad — datos, mecanismos, explicaciones concretas)'
-    };
-
-    const SOCIAL_LABEL = {
-      instagram: 'Instagram (Reels de hasta 90 seg, Carruseles guardados por valor informativo o emocional)',
-      tiktok:    'TikTok (videos 30-60 seg, hooks en la primera frase, ritmo dinámico)',
-      facebook:  'Facebook (contenido narrativo, comunidades, CTA con enlace explícito)'
-    };
-
-    // Posts agrupados por semana: el objetivo aparece una sola vez por fase
-    const semanasPorFase = semanasPlan.map(s => ({
-      semana:   s.numero,
-      fase:     s.faseId,
-      objetivo: s.fase.objetivo,
-      posts:    s.posts.map((post, pi) => ({
-        id:      `sem${s.numero}_p${pi + 1}`,
-        tema:    post.tema,
-        formato: post.esReel ? 'Reel' : 'Carrusel'
-      }))
-    }));
-
-    const totalPosts = semanasPlan.reduce((n, s) => n + s.posts.length, 0);
-
-    return `Eres experta en marketing digital para emprendedoras latinoamericanas. Vas a crear contenido de redes sociales para este producto específico:
-
-PRODUCTO: ${nombre}
-PARA QUIÉN ES: ${descripcion}
-TONO: ${TONOS_LABEL[tono] || tono}
-
-El contenido debe mencionar síntomas, situaciones y emociones REALES de esa audiencia específica. Por ejemplo si es un curso de nutrición hormonal para mujeres en perimenopausia, debe mencionar: calores, insomnio, aumento de peso inexplicable, cambios de humor, sentirse incomprendida por el médico. NUNCA uses frases como "el problema que tu audiencia ya conoce", "las herramientas correctas", "desde el primer día", "esto cambia todo", "tu versión futura", "el momento perfecto" o cualquier frase que funcione para cualquier producto. Si no puedes ser específico al nicho, no lo escribas.
-
-RED SOCIAL: ${SOCIAL_LABEL[social] || social}
-SEMANAS DE PREVENTA: ${semanas} | POSTS POR SEMANA: ${frecuencia}
-
-━━━ PLAN DE CONTENIDO (${totalPosts} posts) ━━━
-${JSON.stringify(semanasPorFase, null, 2)}
-
-━━━ INSTRUCCIONES ━━━
-1. Cada post debe tener ángulo, estructura y apertura COMPLETAMENTE DISTINTOS. Si uno abre con pregunta, el siguiente no puede abrir con pregunta.
-2. INTRO del Reel: 1 frase que para el scroll en 3 segundos. Debe nombrar un síntoma, emoción o situación real y específica de esa audiencia. No conceptos abstractos.
-3. PROBLEMA del Reel: describe la situación concreta que vive esa audiencia — sus síntomas físicos, emociones, frustraciones específicas del nicho.
-4. SOLUCIÓN del Reel: explica qué hace "${nombre}" concretamente para resolver eso. No "te acompaña", no "tiene el método". Algo tangible.
-5. CARRUSEL portada: un título que esa audiencia específica sienta que es exactamente para ella. Slides con bullets concretos del nicho.
-6. CAPTIONS: escritos como una persona real. Máximo 5 emojis. CTA específico al final — qué hacer, dónde ir, qué escribir.
-7. La fase define el enfoque: Expectativa = intriga sin revelar. Deseo = transformación concreta. Urgencia = escasez o tiempo real. Cierre = acción directa.
-8. Máximo 2 menciones de "${nombre}" por post. La protagonista es la lectora y su problema.
-9. Todo en español latinoamericano.
-
-━━━ FORMATO DE RESPUESTA ━━━
-Responde ÚNICAMENTE con JSON válido. Sin texto antes ni después. Sin markdown. Sin bloques de código.
-{
-  "audiencia_identificada": "1 línea describiendo a quién va dirigido, extraído de la descripción",
-  "posts": [
-    {
-      "id": "sem1_p1",
-      "formato": "Reel",
-      "contenido": {
-        "intro": "1 frase que detiene el scroll — síntoma o situación real del nicho",
-        "problema": "2-3 frases sobre la situación concreta que vive esa audiencia",
-        "solucion": "2-3 frases sobre qué hace el producto específicamente para resolver eso",
-        "cta": "1 frase de acción clara y específica",
-        "caption": "caption completo con emojis y hashtags del nicho"
-      }
-    },
-    {
-      "id": "sem1_p2",
-      "formato": "Carrusel",
-      "contenido": {
-        "slides": [
-          { "num": 1, "label": "PORTADA",          "texto": "título que la lectora sienta que es para ella" },
-          { "num": 2, "label": "CONTEXTO",          "texto": "situación real del nicho, 2-3 líneas" },
-          { "num": 3, "label": "EL PROBLEMA",       "texto": "síntomas o consecuencias concretas en bullets" },
-          { "num": 4, "label": "LA SOLUCIÓN",       "texto": "qué hace el producto concretamente, en bullets o pasos" },
-          { "num": 5, "label": "LO QUE LOGRARÁS",  "texto": "resultados concretos y medibles en bullets" },
-          { "num": 6, "label": "SIGUIENTE PASO",    "texto": "instrucción específica: qué hacer ahora" }
-        ],
-        "caption": "caption completo con emojis y hashtags del nicho"
-      }
-    }
-  ]
 }
-Genera los ${totalPosts} posts con los ids exactos del plan de contenido de arriba.`;
+
+function validateData(d) {
+  if (!d.producto) return 'Escribe el nombre del producto o servicio.';
+  if (!d.descripcion) return 'Escribe una descripción breve.';
+  if (!d.fecha_lanzamiento) return 'Selecciona la fecha de lanzamiento.';
+  if (!d.semanas_preventa) return 'Elige cuántas semanas de preventa.';
+  if (!d.red_social) return 'Elige la red social principal.';
+  if (!d.frecuencia) return 'Elige la frecuencia de posts por semana.';
+  if (!d.tipo_contenido) return 'Elige el tipo de contenido.';
+  if (!d.tono) return 'Elige el tono de comunicación.';
+  return null;
+}
+
+function setLoading(on) {
+  btnGenerate.disabled = on;
+  btnGenerate.innerHTML = on
+    ? `<div class="spinner"></div> Generando tu plan...`
+    : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generar plan de lanzamiento`;
+}
+
+function copyText(text, btn, label = 'Copiar') {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = label;
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function buildPostCard(post, idx) {
+  const typeTag = post.tipo === 'Reel'
+    ? `<span class="tag tag-reel">🎬 Reel</span>`
+    : `<span class="tag tag-carousel">🖼️ Carrusel</span>`;
+  const dayTag = post.dia ? `<span class="tag tag-day">${post.dia}</span>` : '';
+
+  let contentHtml = '';
+  if (post.tipo === 'Reel') {
+    contentHtml = `
+      <div class="content-section">
+        <div class="content-label">Guión</div>
+        <div class="content-text">${escHtml(post.guion || '')}</div>
+      </div>`;
+  } else {
+    const slides = Array.isArray(post.slides) ? post.slides : [];
+    const slidesHtml = slides.map((s, i) => `
+      <div class="slide-item">
+        <div class="slide-num">${i + 1}</div>
+        <div class="slide-text">${escHtml(s)}</div>
+      </div>`).join('');
+    contentHtml = `
+      <div class="content-section">
+        <div class="content-label">Slides del carrusel</div>
+        <div class="slides-list">${slidesHtml}</div>
+      </div>`;
   }
 
-  async function llamarGemini(prompt) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`;
+  const captionId = `caption-${idx}`;
+  return `
+    <div class="post-card">
+      <div class="post-header">
+        <div class="post-meta">
+          ${typeTag}
+          ${dayTag}
+          ${post.objetivo ? `<span style="font-size:.8rem;color:#666">${escHtml(post.objetivo)}</span>` : ''}
+        </div>
+      </div>
+      <div class="post-body">
+        ${contentHtml}
+        <div class="content-section">
+          <div class="content-label">Caption</div>
+          <div class="caption-box" id="${captionId}">${escHtml(post.caption || '')}</div>
+          <div class="caption-footer">
+            <button class="btn-copy-caption" onclick="copyCaption('${captionId}', this)">
+              📋 Copiar caption
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
 
-    const res = await fetch(url, {
+function copyCaption(id, btn) {
+  const text = document.getElementById(id)?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderResults(data) {
+  const semanas = Array.isArray(data.semanas) ? data.semanas : [];
+  if (!semanas.length) {
+    resultsBody.innerHTML = `<div class="error-box">No se recibió contenido. Intenta de nuevo.</div>`;
+    return;
+  }
+
+  let html = '';
+  let fullText = `PLAN DE LANZAMIENTO: ${data.producto || ''}\n${'='.repeat(50)}\n\n`;
+
+  semanas.forEach((semana, si) => {
+    const posts = Array.isArray(semana.posts) ? semana.posts : [];
+    html += `<div class="week-block">
+      <div class="week-title">Semana ${semana.numero || si + 1} — ${escHtml(semana.objetivo || '')}</div>`;
+
+    fullText += `SEMANA ${semana.numero || si + 1}: ${semana.objetivo || ''}\n${'-'.repeat(40)}\n`;
+
+    posts.forEach((post, pi) => {
+      html += buildPostCard(post, `s${si}p${pi}`);
+      if (post.tipo === 'Reel') {
+        fullText += `\nPOST ${pi + 1} (Reel) ${post.dia || ''}\nGuión:\n${post.guion || ''}\n`;
+      } else {
+        const slides = Array.isArray(post.slides) ? post.slides : [];
+        fullText += `\nPOST ${pi + 1} (Carrusel) ${post.dia || ''}\nSlides:\n${slides.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n`;
+      }
+      fullText += `Caption:\n${post.caption || ''}\n\n`;
+    });
+
+    html += `</div>`;
+    fullText += '\n';
+  });
+
+  resultsBody.innerHTML = html;
+
+  document.getElementById('btn-copy-all').onclick = () => {
+    const btn = document.getElementById('btn-copy-all');
+    navigator.clipboard.writeText(fullText).then(() => {
+      btn.textContent = '✓ Plan copiado';
+      setTimeout(() => { btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar plan completo`; }, 2500);
+    });
+  };
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  formError.classList.add('hidden');
+
+  const data = getFormData();
+  const err = validateData(data);
+  if (err) {
+    formErrorText.textContent = err;
+    formError.classList.remove('hidden');
+    formError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  setLoading(true);
+  resultsSection.classList.add('hidden');
+
+  try {
+    const res = await fetch('/api/generar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.87,
-          topP: 0.95,
-          maxOutputTokens: 8192,
-          responseMimeType: 'application/json'
-        }
-      })
+      body: JSON.stringify(data),
     });
 
     if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      throw new Error(errData?.error?.message || `Error HTTP ${res.status}`);
+      const msg = await res.text();
+      throw new Error(msg || `Error ${res.status}`);
     }
 
-    const data = await res.json();
-    const texto = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!texto) throw new Error('Gemini devolvió una respuesta vacía.');
+    const json = await res.json();
+    renderResults({ ...json, producto: data.producto });
+    resultsSection.classList.remove('hidden');
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    try {
-      return JSON.parse(texto);
-    } catch {
-      throw new Error('La respuesta de Gemini no es JSON válido.');
-    }
+  } catch (err) {
+    formErrorText.textContent = `Error al generar el plan: ${err.message}`;
+    formError.classList.remove('hidden');
+    formError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } finally {
+    setLoading(false);
   }
-
-  // Inyecta el contenido generado por IA en la estructura del plan
-  // Devuelve la audiencia identificada por Gemini (si la hay)
-  function inyectarContenidoIA(semanasPlan, respuesta) {
-    console.log('[Gemini] Respuesta raw:', JSON.stringify(respuesta, null, 2));
-
-    const mapa = {};
-    (respuesta.posts || []).forEach(p => {
-      // Acepta tanto { id, contenido: {...} } como { id, intro, problema, ... } directo
-      mapa[p.id] = p.contenido || p;
-    });
-
-    semanasPlan.forEach(s => {
-      s.posts.forEach((post, pi) => {
-        const id = `sem${s.numero}_p${pi + 1}`;
-        const c = mapa[id];
-        if (!c) {
-          console.warn(`[Gemini] No se encontró contenido para ${id}`, Object.keys(mapa));
-          return;
-        }
-
-        if (post.esReel) {
-          post.contenido = {
-            intro:    (c.intro    && c.intro.trim())    ? c.intro    : post.contenido.intro,
-            problema: (c.problema && c.problema.trim()) ? c.problema : post.contenido.problema,
-            solucion: (c.solucion && c.solucion.trim()) ? c.solucion : post.contenido.solucion,
-            cta:      (c.cta      && c.cta.trim())      ? c.cta      : post.contenido.cta,
-            caption:  (c.caption  && c.caption.trim())  ? c.caption  : post.contenido.caption
-          };
-          console.log(`[Gemini] Reel ${id} reemplazado:`, post.contenido.intro.slice(0, 60));
-        } else {
-          post.contenido = {
-            slides:  (c.slides && c.slides.length) ? c.slides : post.contenido.slides,
-            caption: (c.caption && c.caption.trim()) ? c.caption : post.contenido.caption
-          };
-          console.log(`[Gemini] Carrusel ${id} reemplazado:`, (post.contenido.slides[0] || '').slice(0, 60));
-        }
-      });
-    });
-
-    return respuesta.audiencia_identificada || null;
-  }
-
-  // ── UI helpers ──
-
-  function renderCargando(nombre, totalPosts) {
-    return `
-      <div class="loading-card">
-        <div class="spinner"></div>
-        <h2 class="loading-title">Generando tu plan con IA</h2>
-        <p class="loading-sub">
-          Creando <strong>${totalPosts} posts únicos</strong> para <strong>${nombre}</strong>
-          <span class="loading-dots"><span></span><span></span><span></span></span>
-        </p>
-        <p class="loading-hint">Gemini está escribiendo guiones y captions personalizados para tu lanzamiento. Esto toma unos segundos.</p>
-      </div>`;
-  }
-
-  function renderError(mensaje) {
-    return `
-      <div class="error-card">
-        <div class="error-icon">⚠️</div>
-        <h2>No se pudo conectar con Gemini</h2>
-        <p class="error-detail">${mensaje}</p>
-        <div class="error-actions">
-          <button class="btn-reintentar" id="btn-reintentar">↺ &nbsp;Reintentar con IA</button>
-          <button class="btn-fallback"   id="btn-fallback">Continuar sin IA (contenido inteligente)</button>
-          <button class="btn-volver-form" id="btn-volver-form">← Editar datos</button>
-        </div>
-      </div>`;
-  }
-
-  // Transición a pantalla de resultados (sin HTML — solo cambia visibilidad)
-  function activarPantallaResultado() {
-    document.getElementById('form-section').style.display  = 'none';
-    document.getElementById('main-header').style.display   = 'none';
-    document.getElementById('main-container').classList.add('wide');
-    document.body.classList.add('showing-result');
-    document.getElementById('result-section').classList.add('visible');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // Vuelve al formulario desde cualquier estado de la pantalla de resultados
-  function volverAlFormulario() {
-    const resultSection = document.getElementById('result-section');
-    resultSection.classList.remove('visible');
-    resultSection.innerHTML = '';
-    document.getElementById('form-section').style.display  = 'block';
-    document.getElementById('main-header').style.display   = 'block';
-    document.getElementById('main-container').classList.remove('wide');
-    document.body.classList.remove('showing-result');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // Colores y fondos por fase
-  const FASE_STYLES = {
-    expectativa: { color: '#1E6FFF', bg: '#eef4ff' },
-    deseo:       { color: '#7c3aed', bg: '#f5f3ff' },
-    urgencia:    { color: '#d97706', bg: '#fffbeb' },
-    cierre:      { color: '#059669', bg: '#ecfdf5' }
-  };
-
-  // Plantillas de posts por fase (hasta 5 por semana, sin Historia — se genera aparte)
-  // Reciben: nombre (string), descripcion (string)
-  const FASES = {
-    expectativa: {
-      nombre: 'Expectativa',
-      emoji: '👀',
-      objetivo: 'Generar curiosidad antes de revelar qué es exactamente el producto. El objetivo es que tu audiencia sienta que algo importante está por llegar.',
-      posts: (n, d) => [
-        {
-          tema: 'El problema que tu audiencia ya conoce',
-          hook: `"¿Por qué hay personas que llevan meses intentando lograrlo y siguen en el mismo lugar? Hoy te cuento algo que lo cambia todo. Algo viene."`
-        },
-        {
-          tema: `5 señales de que ${n} es exactamente para ti`,
-          hook: `"Si llevas tiempo buscando una solución para ${recortar(d, 65)}... este post es para ti. Lee hasta el final porque la número 3 te va a sorprender."`
-        },
-        {
-          tema: 'El error más común que comete tu audiencia',
-          hook: `"La mayoría lo está haciendo mal y ni siquiera lo saben. Hoy te cuento cuál es el error número uno y cómo evitarlo. (Y sí, tiene solución.)"`
-        },
-        {
-          tema: `La transformación que hace posible ${n}`,
-          hook: `"Imagina cómo sería tu vida si este problema ya no existiera. Eso es exactamente lo que viene. Guarda este post para cuando lo anuncie oficialmente."`
-        },
-        {
-          tema: '¿Por qué nada ha funcionado hasta ahora?',
-          hook: `"No es falta de esfuerzo. Es que nadie te había dado las herramientas correctas. Eso está a punto de cambiar. 🤫 Activa las notificaciones."`
-        }
-      ],
-      historias: (n) => [
-        { dia: 'Día 1', tipo: '🗳️ Encuesta', sug: `"¿Cuál es tu mayor reto con [tema]?" — Crea un poll con dos opciones que tu audiencia sienta muy suyas.` },
-        { dia: 'Día 2', tipo: '💬 Pregunta', sug: `Caja de preguntas: "¿Qué quisieras aprender o mejorar en las próximas semanas?"` },
-        { dia: 'Día 3', tipo: '🎬 Detrás de escena', sug: `Comparte un vistazo de lo que estás preparando sin revelar exactamente qué es. Genera intriga.` },
-        { dia: 'Día 4', tipo: '🗳️ Poll', sug: `"¿Te pasa esto?" con una situación que tu cliente ideal vive a diario. Genera identificación.` },
-        { dia: 'Día 5', tipo: '💡 Tip rápido', sug: `Un mini-consejo relacionado con el problema que soluciona ${n}. Corto, directo, accionable.` },
-        { dia: 'Día 6', tipo: '⏳ Cuenta regresiva', sug: `Usa el sticker de cuenta regresiva: "Algo llega muy pronto. ¿Estás lista?"` },
-        { dia: 'Día 7', tipo: '📣 Teaser', sug: `"Mañana lo cuento todo." Cierra la semana generando expectativa del post principal de la próxima semana.` }
-      ]
-    },
-
-    deseo: {
-      nombre: 'Deseo',
-      emoji: '🔥',
-      objetivo: 'Mostrar el valor real de tu oferta. Tu audiencia debe ver el resultado posible y sentir que quiere tenerlo, no solo que lo necesita.',
-      posts: (n, d) => [
-        {
-          tema: `Qué lograrás con ${n}`,
-          hook: `"Esto es lo que pasa cuando alguien finalmente tiene acceso a ${n}: ${recortar(d, 80)}. Y tú puedes ser la próxima en experimentarlo."`
-        },
-        {
-          tema: `Por qué ${n} funciona cuando otras opciones no`,
-          hook: `"No es una solución genérica. Te explico exactamente qué hace diferente a ${n} y por qué da resultados reales donde otras alternativas fallan."`
-        },
-        {
-          tema: `Un vistazo al interior de ${n}`,
-          hook: `"Te muestro cómo se ve ${n} por dentro antes de que abra al público. Spoiler: es exactamente lo que necesitabas. 🎯"`
-        },
-        {
-          tema: 'Resultados reales: esto es lo que cambia',
-          hook: `"Cuando tienes acceso a las herramientas correctas, todo cambia. Esto es lo que logran quienes trabajan con ${n}. ¿Podrías ser la próxima?"`
-        },
-        {
-          tema: `Los 3 pilares de ${n} que lo hacen diferente`,
-          hook: `"No es magia. Es método. Te explico los 3 pilares que hacen que ${n} funcione donde otras opciones solo dan resultados temporales."`
-        }
-      ],
-      historias: (n) => [
-        { dia: 'Día 1', tipo: '💬 Testimonio', sug: `Comparte una frase o resultado de alguien que ya vivió esta transformación. Si no tienes, usa un escenario ideal.` },
-        { dia: 'Día 2', tipo: '🗳️ Encuesta', sug: `"¿Cuál de estos resultados te gustaría lograr?" — dos opciones relacionadas con los beneficios de ${n}.` },
-        { dia: 'Día 3', tipo: '🎬 Detrás de escena', sug: `Muestra el proceso de creación de ${n}. La gente compra lo que ve nacer.` },
-        { dia: 'Día 4', tipo: '💡 Tip de valor', sug: `Un consejo profundo relacionado con ${n}. Que quien lo aplique sienta que ya le estás cambiando algo.` },
-        { dia: 'Día 5', tipo: '❓ Preguntas frecuentes', sug: `Responde la pregunta más común que reciben sobre ${n}. Genera confianza y aclara objeciones.` },
-        { dia: 'Día 6', tipo: '🔖 Guarda esto', sug: `"Guarda esta Historia porque pronto necesitarás esta información." Comparte un dato clave sobre ${n}.` },
-        { dia: 'Día 7', tipo: '🔥 Avance', sug: `"Esta semana viene algo importante sobre ${n}. No te lo pierdas." Prepara a tu audiencia para la fase de urgencia.` }
-      ]
-    },
-
-    urgencia: {
-      nombre: 'Urgencia',
-      emoji: '⏳',
-      objetivo: 'Crear sentido de urgencia real. Tu audiencia debe entender que esperar tiene un costo y que el acceso es limitado en tiempo.',
-      posts: (n, d) => [
-        {
-          tema: `Cuenta regresiva: ${n} abre muy pronto`,
-          hook: `"Faltan pocos días para que ${n} abra sus puertas. Una vez que cierre el lanzamiento, no sabemos cuándo vuelve a estar disponible. ¿Ya estás en la lista de espera?"`
-        },
-        {
-          tema: `Todo lo que incluye ${n}`,
-          hook: `"Para que no quede ninguna duda antes de que abra: esto es exactamente lo que recibes cuando accedes a ${n}. Sin letra pequeña, sin sorpresas."`
-        },
-        {
-          tema: `¿Vale la pena ${n}? Te lo digo sin filtros`,
-          hook: `"Sé que tienes dudas. Y está bien. Hoy te respondo las 3 preguntas más honestas que me han hecho sobre ${n}. Sin marketing, solo la verdad."`
-        },
-        {
-          tema: `Lo que cambia cuando entras a ${n}`,
-          hook: `"No es solo el contenido. Es el antes y el después. Esto es lo que cambia concretamente en tu vida cuando accedes a ${n}. ¿Estás lista para eso?"`
-        },
-        {
-          tema: 'Última oportunidad de preguntar antes del lanzamiento',
-          hook: `"El lanzamiento de ${n} está a días. Antes de que abra, quiero responder tus dudas. Escríbeme lo que quieras saber. Sin compromiso."`
-        }
-      ],
-      historias: (n) => [
-        { dia: 'Día 1', tipo: '⏳ Cuenta regresiva', sug: `Sticker de countdown: "Faltan X días para que ${n} abra." Actualízalo cada día.` },
-        { dia: 'Día 2', tipo: '❓ Resuelve objeciones', sug: `"¿Tienes dudas sobre ${n}? Escríbelas aquí." Caja de preguntas para responder en tiempo real.` },
-        { dia: 'Día 3', tipo: '🗳️ Encuesta de intención', sug: `"¿Estás pensando en unirte a ${n}?" — Sí, estoy casi segura / Aún tengo dudas.` },
-        { dia: 'Día 4', tipo: '💬 Responde en vivo', sug: `Responde una pregunta frecuente sobre ${n} en formato de texto en Historia. Claro y directo.` },
-        { dia: 'Día 5', tipo: '🔖 Recordatorio', sug: `"Enlace en bio para unirte a la lista de espera de ${n}. Los primeros tendrán [beneficio especial]."` },
-        { dia: 'Día 6', tipo: '🔥 Urgencia', sug: `"Mañana abre ${n}. ¿Ya estás lista?" Usa sticker de cuenta regresiva y enlace en bio.` },
-        { dia: 'Día 7', tipo: '📣 Último aviso', sug: `"MAÑANA ES EL DÍA. ${n} abre sus puertas. Enlace en bio para asegurar tu acceso desde el primer minuto."` }
-      ]
-    },
-
-    cierre: {
-      nombre: 'Cierre',
-      emoji: '🚀',
-      objetivo: 'Abrir ventas y convertir en acción inmediata el interés que acumulaste durante la preventa. Es el momento de ser directa y clara.',
-      posts: (n, d) => [
-        {
-          tema: `¡${n} ya está disponible!`,
-          hook: `"¡YA ESTÁ AQUÍ! 🎉 ${n} abrió sus puertas HOY. Llevo semanas preparando esto pensando en ti y por fin llegó el momento. Enlace en bio para acceder ahora."`
-        },
-        {
-          tema: `Cómo unirte a ${n} paso a paso`,
-          hook: `"Si has estado esperando ${n}, este es tu momento. Te explico cómo acceder en menos de 2 minutos. No lo dejes para después: el acceso es por tiempo limitado."`
-        },
-        {
-          tema: `Qué pasa después de unirte a ${n}`,
-          hook: `"Una vez que accedes a ${n}, esto es lo que ocurre: [paso 1], [paso 2], [paso 3]. Sin complicaciones. Sin perder tiempo. Solo resultados."`
-        },
-        {
-          tema: `Por qué hoy es el mejor momento para unirte`,
-          hook: `"Hay personas que llevan meses esperando el momento perfecto. El momento perfecto es ahora. Te cuento por qué esperar te está costando más de lo que crees."`
-        },
-        {
-          tema: `Últimas horas de acceso a ${n}`,
-          hook: `"⏰ El acceso a ${n} cierra pronto. Una vez que cierre no habrá lista de espera. ¿Ya estás adentro? Si tienes dudas, escríbeme ahora mismo."`
-        }
-      ],
-      historias: (n) => [
-        { dia: 'Día 1', tipo: '🎉 Anuncio', sug: `"¡ABRIÓ! ${n} ya está disponible. Enlace en bio." Usa colores llamativos y el sticker de enlace directo.` },
-        { dia: 'Día 2', tipo: '📲 Tutorial', sug: `Muestra el proceso de compra/acceso en pantalla. Que sea súper fácil de seguir. Máximo 4 pasos.` },
-        { dia: 'Día 3', tipo: '💬 Testimonios en tiempo real', sug: `Comparte reacciones de quienes ya accedieron a ${n}. La prueba social cierra ventas.` },
-        { dia: 'Día 4', tipo: '❓ FAQ exprés', sug: `Responde las 3 preguntas más frecuentes sobre ${n} en Stories rápidas. Resuelve el último freno.` },
-        { dia: 'Día 5', tipo: '⏳ Urgencia real', sug: `"Quedan [X] horas / plazas para acceder a ${n}. Después de eso, cerramos." Sticker de countdown.` },
-        { dia: 'Día 6', tipo: '🔥 Penúltimo aviso', sug: `"Mañana cierra ${n}. Si estás esperando una señal, esta es la señal." Enlace directo en bio.` },
-        { dia: 'Día 7', tipo: '🚪 Cierre', sug: `"HOY es el último día para acceder a ${n}. A las [hora] cerramos. Enlace en bio. Sin excusas. 💙"` }
-      ]
-    }
-  };
-
-  // Fases que se usan según número de semanas (siempre terminan en cierre)
-  const FASES_POR_SEMANAS = {
-    1: ['cierre'],
-    2: ['urgencia', 'cierre'],
-    3: ['deseo', 'urgencia', 'cierre'],
-    4: ['expectativa', 'deseo', 'urgencia', 'cierre']
-  };
-
-  // ─────────────────────────────────────────────
-  //  UTILIDADES
-  // ─────────────────────────────────────────────
-
-  function recortar(texto, max) {
-    if (texto.length <= max) return texto;
-    return texto.slice(0, max).trimEnd() + '…';
-  }
-
-  // Parsear fecha local desde YYYY-MM-DD sin desfase de zona horaria
-  function parsearFecha(str) {
-    const [y, m, d] = str.split('-').map(Number);
-    return new Date(y, m - 1, d);
-  }
-
-  // Sumar días a una fecha
-  function sumarDias(fecha, dias) {
-    const f = new Date(fecha);
-    f.setDate(f.getDate() + dias);
-    return f;
-  }
-
-  // Formatear fecha en español: "lunes 7 de abril"
-  function formatearFecha(fecha) {
-    const DIAS   = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-    const MESES  = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    return `${DIAS[fecha.getDay()]} ${fecha.getDate()} de ${MESES[fecha.getMonth()]}`;
-  }
-
-  // Capitalizar primera letra
-  function capitalizar(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
-  const SOCIAL_LABELS = {
-    instagram: 'Instagram',
-    tiktok:    'TikTok',
-    facebook:  'Facebook'
-  };
-
-  // ─────────────────────────────────────────────
-  //  GENERADORES DE CONTENIDO POR FORMATO Y TONO
-  // ─────────────────────────────────────────────
-
-  // Capitaliza primera letra de una cadena
-  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-  function generarContenidoReel(nombre, descripcion, tema, faseId, tono, postIdx) {
-    const d  = recortar(descripcion, 70);
-    const t  = tema.toLowerCase();
-    const tc = cap(tema);
-    const i  = postIdx % 5;
-
-    // ── INTRO (hook 3 seg) — siempre basado en el tema específico ──
-    const INTROS = {
-      empoderador: [
-        `"${tc} — esto es lo que nadie te había explicado con claridad. Y es exactamente por qué existe ${nombre}. Quédate hasta el final."`,
-        `"¿Cuánto tiempo llevas lidiando con ${t}? Hoy eso cambia. ${nombre} tiene la respuesta que buscabas y te la voy a mostrar ahora."`,
-        `"Voy a ser directa: ${t} tiene solución. Una solución concreta, probada y con nombre propio: ${nombre}. Mira esto."`,
-        `"La diferencia entre quien ya resolvió ${t} y quien sigue atascada es una sola cosa. Hoy te la muestro con ${nombre}."`,
-        `"No más prueba y error con ${t}. ${nombre} tiene el sistema exacto que estabas buscando. Esto cambia todo para ti."`
-      ],
-      cercano: [
-        `"Oye, ¿me das un segundo? Necesito hablarte de ${t} porque sé que esto te resuena — y tengo algo que te va a cambiar el juego."`,
-        `"Mira, yo también pasé por esto de ${t}. Por eso creé ${nombre}. Escucha esto porque creo que es exactamente lo que necesitás."`,
-        `"¿Te pasa lo de ${t}? A mí también me pasó. Y te juro que cuando encontré la solución todo fue diferente. Te cuento."`,
-        `"Entre amigas: ${t} es algo que MUCHAS vivimos pero pocas hablan. Hoy lo hablamos. Y tiene solución, te lo prometo."`,
-        `"Tengo que contarte algo sobre ${t} porque si no lo sabes, vas a seguir en el mismo lugar. Y eso no lo quiero para ti."`
-      ],
-      urgente: [
-        `"PAUSA. ${tc}: si seguís scrolleando sin ver esto, te lo vas a perder. Tengo 60 segundos para mostrarte algo que cambia todo."`,
-        `"⚡ Alerta sobre ${t}: esto te afecta AHORA MISMO y tienes muy poco tiempo para actuar antes de que sea tarde."`,
-        `"${tc}: cada día que pasa sin resolver esto te cuesta resultados reales. Tengo la solución en este reel. Mirá."`,
-        `"No sigas scrolleando — ${t} es exactamente por qué muchas personas no llegan a sus metas. Tengo la solución. ¡YA!"`,
-        `"Esto es urgente: ${t} tiene una ventana de oportunidad muy corta. Y ${nombre} es la respuesta. Mira esto ahora."`
-      ],
-      educativo: [
-        `"Hoy te explico todo sobre ${t}: qué es, por qué importa y cómo ${nombre} lo convierte en resultados reales. Quédate."`,
-        `"${tc}: hay información que la mayoría desconoce sobre esto. En los próximos 60 segundos te la doy toda. Toma nota."`,
-        `"Lección de hoy: ${t}. Por qué el 80% lo hace mal y cómo ${nombre} te da el método que sí funciona. Atencion."`,
-        `"¿Sabés exactamente por qué ${t} importa tanto? Hoy lo desglosamos con datos y ejemplos concretos. Esto es lo que necesitas."`,
-        `"${tc}: 3 claves que la mayoría no conoce. Información basada en resultados reales, no en teoría. Vamos."`
-      ]
-    };
-
-    // ── PROBLEMA — ángulo específico al tema, 5 variaciones ──
-    const PROBLEMAS = [
-      `El error más común al enfrentar ${t} es seguir intentando sin el sistema correcto.\n\nSin método probado, el esfuerzo se convierte en frustración — y los resultados no llegan.`,
-      `¿Por qué ${t} sigue siendo un obstáculo para tantas personas?\n\nPorque la mayoría lo aborda sin claridad, sin estructura y sin las herramientas que realmente funcionan.`,
-      `${tc} no es un problema de motivación. Es un problema de método.\n\nSin el método correcto, se pueden pasar meses — incluso años — en el mismo punto exacto.`,
-      `Cuando no hay claridad sobre ${t}, todo cuesta el doble: más tiempo, más energía, más frustración.\n\nY los resultados siguen sin aparecer, aunque el esfuerzo esté ahí.`,
-      `La mayoría enfrenta ${t} de la manera más difícil: sola, sin guía, probando cosas que no funcionan.\n\nEl resultado es siempre el mismo: estancamiento y desgaste.`
-    ];
-
-    // ── SOLUCIÓN — vincula el tema al producto, 5 variaciones ──
-    const SOLUCIONES = [
-      `${nombre} convierte ${t} en algo concreto y manejable.\n\nUn método paso a paso que elimina la adivinanza y te da claridad — desde el primer día.`,
-      `Con ${nombre}, ${t} deja de ser un obstáculo y se convierte en tu ventaja.\n\nPorque tienes el sistema exacto, las herramientas correctas y el acompañamiento que necesitas.`,
-      `${nombre} fue creado exactamente para esto: resolver ${t} con un método probado.\n\nNo genérico, no teórico — diseñado para la realidad de personas como tú.`,
-      `La diferencia que hace ${nombre} en ${t} es simple: te da el mapa que te faltaba.\n\nSin el mapa, cualquiera se pierde. Con ${nombre}, sabes exactamente a dónde vas.`,
-      `${nombre} te da lo que ninguna otra solución te había dado para ${t}: claridad, sistema y resultados reales.\n\nDesde el día 1, sabes qué hacer y por qué funciona.`
-    ];
-
-    // ── CTA — varía por tono + índice ──
-    const CTAS = {
-      empoderador: [
-        `"Activa las notificaciones ahora. Lo que viene con ${nombre} va a inspirarte a dar ese paso que llevas tiempo posponiendo. 💙"`,
-        `"Guarda este video. Y cuando ${nombre} abra, recordá este momento en que supiste que era para vos. 💙"`,
-        `"Enlace en bio para la lista de espera de ${nombre}. Da ese paso ahora. Tu versión futura ya te lo agradece. 🚀"`,
-        `"Enlace en bio. ${nombre} está esperándote. Da el paso ahora mismo — te lo mereces. 🚀"`,
-        `"Comentá 'quiero' si esto te resonó y te mando info de ${nombre} antes que a nadie. 💙"`
-      ],
-      cercano: [
-        `"Comentá 'ya' si querés que te avise cuando anuncie ${nombre}. ¡Te mando info antes que a nadie! 💌"`,
-        `"¿Te identificaste? Contame en comentarios. Y si querés más info de ${nombre}, escribime — te cuento todo. ✨"`,
-        `"Escribime por DM si tenés dudas sobre ${nombre} — te respondo hoy mismo. No quiero que te quedes fuera. 🤍"`,
-        `"Enlace en bio para ${nombre}. Y si tenés preguntas, escribime ahora — te respondo en minutos. 💬"`,
-        `"¿Esto te ayudó? Guardá el video y compartilo con alguien que también lo necesite. 🤍"`
-      ],
-      urgente: [
-        `"¡Activá las notificaciones YA para no perderte el anuncio de ${nombre}! No digas que no te avisé. ⚡"`,
-        `"Lista de espera de ${nombre}: ENLACE EN BIO. Hacelo AHORA antes de que se llene. ¡Sin excusas!"`,
-        `"ENLACE EN BIO. ${nombre} abre pronto y las plazas son limitadas. ¡AHORA o te quedás afuera!"`,
-        `"ENLACE EN BIO. Acceso a ${nombre} disponible HOY. Limitado. ¡No esperes más! ⏰"`,
-        `"Cada segundo que tardás con ${nombre} es un segundo que alguien más aprovecha. ¡ENLACE EN BIO! 🔥"`
-      ],
-      educativo: [
-        `"Guardá este video y activá notificaciones para recibir información completa sobre ${nombre}."`,
-        `"Si querés saber cómo ${nombre} aplica a tu situación específica, escribime. Te explico con detalle."`,
-        `"El enlace con toda la info de ${nombre} está en bio. Te recomiendo leerla completa antes de decidir."`,
-        `"Toda la información sobre ${nombre} está en el enlace de bio. Leéla con calma y tomá la decisión correcta."`,
-        `"Guardá este video 🔖 — esta información sobre ${t} y ${nombre} vale mucho. Compartila con quien la necesite."`
-      ]
-    };
-
-    const emojisTono = { empoderador: '💪✨🚀', cercano: '🤍💬✨', urgente: '⚡🔥⏰', educativo: '📚💡🎯' };
-    const hashtagsCierre = {
-      empoderador: '#lanzamiento #emprendedora #transformacion',
-      cercano:     '#emprendedora #comunidad #contigo',
-      urgente:     '#ahoraonunca #lanzamiento #accion',
-      educativo:   '#aprendizaje #estrategia #resultados'
-    };
-
-    const introsT  = INTROS[tono]  || INTROS.empoderador;
-    const ctasT    = CTAS[tono]    || CTAS.empoderador;
-
-    const intro    = introsT[i];
-    const problema = PROBLEMAS[i];
-    const solucion = SOLUCIONES[i];
-    const cta      = ctasT[i];
-
-    const hookCaption = intro.replace(/^"|"$/g, '');
-    const caption = `${emojisTono[tono]} ${hookCaption}\n\n👉 ${tema}\n\n💾 Guardá este video · Compartilo si te resonó\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
-
-    return { intro, problema, solucion, cta, caption };
-  }
-
-  function generarContenidoCarrusel(nombre, descripcion, tema, faseId, tono, postIdx) {
-    const d50 = recortar(descripcion, 55);
-    const d80 = recortar(descripcion, 80);
-    const t   = tema.toLowerCase();
-    const tc  = cap(tema);
-    const i   = postIdx % 5;
-
-    // ── PORTADA — directamente del tema, estilizada por tono ──
-    const PORTADAS = {
-      empoderador: [
-        `${tc.toUpperCase()}: lo que nadie te había dicho (hasta hoy)`,
-        `${tc}: la guía que sí cambia todo con ${nombre}`,
-        `Por qué ${t} es más importante de lo que crees`,
-        `${tc}: el antes y el después con ${nombre}`,
-        `Lo que cambia cuando finalmente entiendes ${t}`
-      ],
-      cercano: [
-        `${tc}: lo que necesitabas escuchar`,
-        `Hablemos de ${t} (y de por qué ${nombre} existe)`,
-        `${tc}: lo que yo también viví y cómo lo resolví`,
-        `Entre amigas: todo sobre ${t} y ${nombre}`,
-        `${tc} sin filtros — lo que nadie te dice`
-      ],
-      urgente: [
-        `⚡ ${tc.toUpperCase()}: ¿ya lo sabías?`,
-        `${tc.toUpperCase()}: esto no puede esperar más`,
-        `URGENTE: lo que ${t} te está costando HOY`,
-        `${tc}: actúa ahora o te quedás atrás`,
-        `${tc.toUpperCase()}: la información que necesitás AHORA`
-      ],
-      educativo: [
-        `${tc}: guía completa para entenderlo`,
-        `Todo sobre ${t}: datos, claves y método`,
-        `${tc}: lo que dice la evidencia`,
-        `3 claves sobre ${t} que transforman resultados`,
-        `${tc}: análisis completo con ${nombre}`
-      ]
-    };
-
-    // ── SLIDE 2 (Contexto) — 5 variaciones basadas en el tema ──
-    const SLIDE2S = [
-      `Hablar de ${t} incomoda a muchas porque implica reconocer que hay algo que no está funcionando.\n\nY esa incomodidad tiene un costo real en tus resultados.`,
-      `Hay algo que la mayoría ignora sobre ${t}: no es tan complicado como parece.\n\nEl problema es que nadie lo había explicado de la manera correcta — hasta ahora.`,
-      `${tc} es uno de esos temas que todo el mundo menciona pero muy pocas entienden a fondo.\n\nHoy cambia eso. Cada slide de este carrusel suma claridad.`,
-      `Cuando alguien dice que no puede avanzar con ${t}, casi siempre hay una razón muy concreta.\n\nY no es falta de esfuerzo. Es falta del sistema correcto.`,
-      `${tc} afecta directamente tus resultados — lo sepas o no.\n\nPor eso creé ${nombre}: para que dejes de improvisar y empieces a avanzar con método.`
-    ];
-
-    // ── SLIDE 3 (El problema) — 5 variaciones ──
-    const SLIDE3S = [
-      `¿Te ha pasado esto con ${t}?\n\n→ Intentás avanzar y algo siempre te detiene\n→ Sentís que te falta una pieza clave\n→ Ves a otras personas lograrlo mientras vos seguís en el mismo lugar\n\nNo es suerte. Es sistema.`,
-      `El error más común con ${t}:\n\n✗ Buscar soluciones genéricas\n✗ Actuar sin claridad ni estructura\n✗ Esperar "el momento perfecto"\n\nResultado: meses de esfuerzo sin avance real.`,
-      `Lo que nadie te dice sobre ${t}:\n\n→ No es un problema de motivación\n→ No es un problema de tiempo\n→ Es un problema de método\n\nSin el método correcto, el esfuerzo no alcanza.`,
-      `Por qué ${t} sigue siendo un obstáculo:\n\n✗ Demasiada información sin estructura\n✗ Consejos contradictorios por todos lados\n✗ Sin alguien que lo explique para tu realidad\n\nEso genera parálisis y desgaste.`,
-      `Las consecuencias de no resolver ${t}:\n\n→ Más tiempo perdido en prueba y error\n→ Más energía gastada sin resultados\n→ Más distancia entre donde estás y donde querés estar\n\n¿Cuánto más vale esperar?`
-    ];
-
-    // ── SLIDE 4 (La solución) — 5 variaciones ──
-    const SLIDE4S = [
-      `Por eso existe ${nombre}.\n\nUn sistema diseñado específicamente para ${d80}.\n\nNo genérico. No teórico.\nReal, paso a paso y aplicable desde el día 1.`,
-      `${nombre} convierte ${t} en algo concreto:\n\n✓ Método claro sin adivinar\n✓ Herramientas listas para usar\n✓ Estructura que genera resultados\n\nExactamente lo que faltaba.`,
-      `La diferencia que hace ${nombre} con ${t}:\n\n→ Te da el mapa que te faltaba\n→ Elimina la prueba y error\n→ Convierte el esfuerzo en resultados medibles\n\nAsí de concreto.`,
-      `Con ${nombre} y ${t} pasan estas cosas:\n\n✓ Claridad desde el primer módulo\n✓ Acción sin parálisis\n✓ Avance visible semana a semana\n\nSin vueltas. Sin excusas.`,
-      `${nombre} existe porque ${t} merece una solución real:\n\n→ No más información suelta\n→ No más improvisar\n→ Un sistema completo para ${d50}\n\nEso es ${nombre}.`
-    ];
-
-    // ── SLIDE 5 (Lo que lograrás) — varía por tono + idx ──
-    const SLIDE5S = {
-      empoderador: [
-        `Con ${nombre} y ${t} resuelto, podrás:\n\n💪 Avanzar con confianza real\n🎯 Tener claridad sobre cada paso\n✨ Crear los resultados que sabés que merecés\n\nEsto es lo que te espera.`,
-        `Lo que logran quienes resuelven ${t} con ${nombre}:\n\n💪 Resultados reales y medibles\n🎯 Método claro sin adivinar\n✨ Confianza para avanzar sin frenos`,
-        `Cuando ${t} deja de ser un obstáculo:\n\n💪 Empezás a avanzar de verdad\n🎯 Las decisiones se vuelven más fáciles\n✨ Los resultados empiezan a llegar\n\n${nombre} hace posible esto.`,
-        `El cambio que genera ${nombre} con ${t}:\n\n💪 De la parálisis → a la acción\n🎯 Del "no sé cómo" → al "ya lo estoy haciendo"\n✨ Del estancamiento → a los resultados`,
-        `Lo que mereces lograr con ${nombre}:\n\n💪 Claridad total sobre ${t}\n🎯 Sistema probado a tu disposición\n✨ Resultados que confirman que valió la pena`
-      ],
-      cercano: [
-        `Lo que quiero para vos con ${nombre}:\n\n🤍 Que ${t} deje de ser una carga\n✨ Que tengas un plan claro de verdad\n💬 Que no sientas que estás sola en esto`,
-        `Con ${nombre}, imaginate:\n\n🤍 Entender ${t} de una vez por todas\n✨ Avanzar sin tener que adivinar\n💬 Sentirte acompañada en cada paso`,
-        `Lo que cambia cuando resolvés ${t} con ${nombre}:\n\n🤍 El miedo se convierte en claridad\n✨ El esfuerzo empieza a dar frutos\n💬 Sentís que por fin vas por el camino correcto`,
-        `Ya dentro de ${nombre} vas a:\n\n🤍 Entender ${t} desde adentro\n✨ Ver resultados que podés compartir\n💬 Ser parte de una comunidad que también lo vive`,
-        `Te mereces resolver ${t} con ${nombre}:\n\n🤍 Sin más prueba y error\n✨ Con un método que ya funciona\n💬 Con alguien que lo entiende de verdad`
-      ],
-      urgente: [
-        `${nombre} y ${t}: resultados rápidos y concretos:\n\n⚡ Implementación desde el día 1\n🔥 Sin perder tiempo en lo que no funciona\n⏰ Resultados medibles desde la semana 1`,
-        `Por qué ${nombre} resuelve ${t} más rápido:\n\n⚡ Metodología probada y directa\n🔥 Aplicación inmediata, sin rodeos\n⏰ Diseñado para resultados en tiempo real`,
-        `Si actuás AHORA con ${nombre} en ${t}:\n\n⚡ Arrancás con todo listo\n🔥 Tomás ventaja sobre quienes esperan\n⏰ Accedés al mejor precio del lanzamiento`,
-        `${nombre} abierto = tu ventaja en ${t}:\n\n⚡ Implementación desde HOY\n🔥 Resultados que se ven rápido\n⏰ Sin más excusas de "mañana empiezo"`,
-        `No esperes más para resolver ${t}:\n\n⚡ Cada día tiene un costo real\n🔥 ${nombre} está disponible AHORA\n⏰ El acceso es por tiempo limitado`
-      ],
-      educativo: [
-        `Lo que ${nombre} te enseña sobre ${t}:\n\n📚 El método completo paso a paso\n💡 Por qué funciona y cómo aplicarlo\n🎯 Métricas para medir tu avance real`,
-        `Aprendizajes clave de ${nombre} sobre ${t}:\n\n📚 Framework probado con casos reales\n💡 Estrategias aplicables desde el inicio\n🎯 Plan de implementación personalizado`,
-        `Lo que la ciencia dice sobre ${t} y ${nombre}:\n\n📚 Metodología basada en evidencia\n💡 Aplicación práctica con resultados documentados\n🎯 Sistema que escala con tu crecimiento`,
-        `Dentro de ${nombre} encontrarás sobre ${t}:\n\n📚 Módulos estructurados y progresivos\n💡 Material práctico con aplicación directa\n🎯 Sistema de seguimiento de resultados`,
-        `Por qué ${nombre} es la mejor decisión para ${t}:\n\n📚 Contenido validado con resultados reales\n💡 Acceso a estrategias que funcionan\n🎯 Claridad total sobre cómo avanzar`
-      ]
-    };
-
-    // ── SLIDE 6 (CTA final) — varía por tono + idx ──
-    const SLIDE6S = {
-      empoderador: [
-        `Sabés que esto es para vos.\n\nLo único que falta es dar el paso.\n\n→ Enlace en bio\n\n💙 ${nombre} te está esperando.`,
-        `Cada día que pasa sin resolver ${t} es un día menos de resultados.\n\n→ Enlace en bio para ${nombre}\n\n💪 Tu versión futura ya te lo agradece.`,
-        `Llegaste hasta el slide 6. Eso dice algo sobre vos.\n\nDa el siguiente paso.\n\n→ Enlace en bio — ${nombre} 🚀`,
-        `No hay momento perfecto. Hay decisión.\n\nEsta es tu señal.\n\n→ Enlace en bio para ${nombre}\n\n💙 Te espero adentro.`,
-        `Lo que falta entre donde estás y donde querés estar:\n\nUna decisión. ${nombre}.\n\n→ Enlace en bio 🚀`
-      ],
-      cercano: [
-        `Si llegaste hasta acá, es una señal.\n\n¿Hablamos? Escribime por DM\no entrá directo desde el enlace en bio.\n\n🤍 Te espero adentro de ${nombre}.`,
-        `¿Este carrusel te resonó? Entonces ${nombre} es para vos.\n\n→ Enlace en bio\n\n💬 Y si tenés dudas, escribime — te respondo hoy.`,
-        `Guardá este carrusel para volver a leerlo.\n\nY cuando estés lista, el enlace de ${nombre} te espera en bio.\n\n🤍 Sin presiones — cuando vos decidas.`,
-        `No tenés que decidir sola.\n\nEscribime por DM y te cuento todo sobre ${nombre} para tu caso específico.\n\n💬 Estoy aquí para vos.`,
-        `¿Cuál slide te llegó más?\n\nCuéntame en comentarios. Y si ${nombre} te interesa, el enlace está en bio.\n\n🤍 Te espero.`
-      ],
-      urgente: [
-        `NO LO DEJÉS PARA DESPUÉS.\n\n→ ENLACE EN BIO — AHORA MISMO\n\n⏰ ${nombre} es por tiempo limitado.\n¡Esta es tu oportunidad!`,
-        `Cada minuto que tardás, alguien más está entrando a ${nombre}.\n\n→ ENLACE EN BIO\n\n⚡ ¡AHORA O NUNCA!`,
-        `${tc} resuelto + ${nombre} = resultados.\n\nPero hay que actuar YA.\n\n→ ENLACE EN BIO — acceso limitado 🔥`,
-        `¿Hasta cuándo vas a esperar para resolver ${t}?\n\n→ ENLACE EN BIO para ${nombre}\n\n⏰ El tiempo se acaba. ¡AHORA!`,
-        `ÚLTIMO AVISO: ${nombre} cierra pronto.\n\nNO. LO. DEJÉS. PARA. DESPUÉS.\n\n→ ENLACE EN BIO ⚡`
-      ],
-      educativo: [
-        `Decisión informada = mejor resultado.\n\nYa tenés toda la información sobre ${t}.\nEl siguiente paso es tuyo.\n\n→ Enlace en bio para ${nombre}.`,
-        `Ahora que entendés ${t}, el próximo paso es claro.\n\n${nombre} te da el sistema completo.\n\n→ Enlace en bio para más información.`,
-        `Información + sistema + acción = resultados.\n\nYa tenés la información sobre ${t}.\n${nombre} te da el sistema.\n\n→ Enlace en bio.`,
-        `¿Querés profundizar en ${t} y cómo ${nombre} lo aplica?\n\nEscribime — te mando información detallada.\n\nO directamente → enlace en bio.`,
-        `El conocimiento sobre ${t} sin acción no genera resultados.\n\n${nombre} convierte ese conocimiento en avance real.\n\n→ Enlace en bio 📚`
-      ]
-    };
-
-    const emojisTono = { empoderador: '💪✨🚀', cercano: '🤍💬✨', urgente: '⚡🔥⏰', educativo: '📚💡🎯' };
-    const hashtagsCierre = {
-      empoderador: '#lanzamiento #emprendedora #transformacion',
-      cercano:     '#emprendedora #comunidad #contigo',
-      urgente:     '#ahoraonunca #lanzamiento #accion',
-      educativo:   '#aprendizaje #estrategia #resultados'
-    };
-
-    const portadasT = PORTADAS[tono] || PORTADAS.empoderador;
-    const slide5sT  = SLIDE5S[tono]  || SLIDE5S.empoderador;
-    const slide6sT  = SLIDE6S[tono]  || SLIDE6S.empoderador;
-
-    const portada = portadasT[i];
-    const s5      = slide5sT[i];
-    const s6      = slide6sT[i];
-
-    const caption = `${emojisTono[tono]} ${portada}\n\n👉 Guardá este carrusel — esta info vale mucho\n💬 ¿Cuál slide te llegó más? Contame\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
-
-    return {
-      slides: [
-        { num: 1, label: 'PORTADA',          texto: portada },
-        { num: 2, label: 'CONTEXTO',         texto: SLIDE2S[i] },
-        { num: 3, label: 'EL PROBLEMA',      texto: SLIDE3S[i] },
-        { num: 4, label: 'LA SOLUCIÓN',      texto: SLIDE4S[i] },
-        { num: 5, label: 'LO QUE LOGRARÁS', texto: s5 },
-        { num: 6, label: 'SIGUIENTE PASO',   texto: s6 }
-      ],
-      caption
-    };
-  }
-
-  // ─────────────────────────────────────────────
-  //  GENERADOR DE PLAN
-  // ─────────────────────────────────────────────
-
-  function generarPlan(datos) {
-    const { nombre, descripcion, fechaLanzamiento, semanas, frecuencia, tipoContenido, tono } = datos;
-    const faseIds  = FASES_POR_SEMANAS[semanas];
-    const fechaLanz = parsearFecha(fechaLanzamiento);
-    const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-    const calculada = sumarDias(fechaLanz, -(semanas * 7));
-    const fechaIniPreventa = calculada < hoy ? hoy : calculada;
-
-    // Construir semanas con fechas
-    const semanasPlan = faseIds.map((faseId, idx) => {
-      const inicioSemana = sumarDias(fechaIniPreventa, idx * 7);
-      const finSemana    = sumarDias(inicioSemana, 6);
-      const fase         = FASES[faseId];
-      const posts = fase.posts(nombre, descripcion)
-        .slice(0, frecuencia)
-        .map((post, i) => {
-          const formato = getFormato(tipoContenido, i);
-          const esReel  = formato.includes('Reel');
-          const contenido = esReel
-            ? generarContenidoReel(nombre, descripcion, post.tema, faseId, tono, i)
-            : generarContenidoCarrusel(nombre, descripcion, post.tema, faseId, tono, i);
-          return { ...post, formato, contenido, esReel };
-        });
-      const historias = fase.historias(nombre);
-      return { numero: idx + 1, faseId, fase, inicioSemana, finSemana, posts, historias };
-    });
-
-    return { semanasPlan, fechaIniPreventa, fechaLanz };
-  }
-
-  // ─────────────────────────────────────────────
-  //  RENDER HTML
-  // ─────────────────────────────────────────────
-
-  function renderContenidoPost(post) {
-    if (post.esReel) {
-      const c = post.contenido;
-      return `
-        <div class="post-content">
-          <div class="script-section s-intro">
-            <div class="script-label">🎬 Intro — Hook 3 segundos</div>
-            <div class="script-text">${c.intro}</div>
-          </div>
-          <div class="script-section s-problema">
-            <div class="script-label">⚡ Desarrollo — El problema</div>
-            <div class="script-text">${c.problema}</div>
-          </div>
-          <div class="script-section s-solucion">
-            <div class="script-label">✅ Desarrollo — La solución</div>
-            <div class="script-text">${c.solucion}</div>
-          </div>
-          <div class="script-section s-cta">
-            <div class="script-label">👆 Cierre — Llamada a la acción</div>
-            <div class="script-text">${c.cta}</div>
-          </div>
-          <div class="post-caption">
-            <div class="caption-header">
-              <span class="caption-label">📋 Caption listo para copiar</span>
-              <button class="btn-copy-caption" data-caption="${encodeURIComponent(c.caption)}">Copiar</button>
-            </div>
-            <div class="caption-text">${c.caption}</div>
-          </div>
-        </div>
-      `;
-    } else {
-      const c = post.contenido;
-      const slidesHTML = c.slides.map(s => `
-        <div class="slide-item ${s.num === 1 ? 'portada' : ''}">
-          <div class="slide-num-col">
-            <span class="slide-num">${s.num}</span>
-          </div>
-          <div>
-            <div class="slide-label">${s.label}</div>
-            <div class="slide-text">${s.texto}</div>
-          </div>
-        </div>
-      `).join('');
-      return `
-        <div class="post-content">
-          ${slidesHTML}
-          <div class="post-caption">
-            <div class="caption-header">
-              <span class="caption-label">📋 Caption listo para copiar</span>
-              <button class="btn-copy-caption" data-caption="${encodeURIComponent(c.caption)}">Copiar</button>
-            </div>
-            <div class="caption-text">${c.caption}</div>
-          </div>
-        </div>
-      `;
-    }
-  }
-
-  function renderResultado(datos, plan) {
-    const { nombre, semanas, social, frecuencia, tipoContenido, tono } = datos;
-    const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
-    const totalPosts  = semanas * frecuencia;
-    const tonoInfo    = TONOS[tono] || TONOS.empoderador;
-    const badgeIA     = datos._generadoConIA
-      ? `&nbsp;<span class="ia-badge">✦ Generado con IA</span>`
-      : '';
-
-    const summaryHTML = `
-      <div class="summary-card">
-        <div class="summary-item">
-          <span class="summary-label">Inicio de preventa</span>
-          <span class="summary-value">${capitalizar(formatearFecha(fechaIniPreventa))}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Día de lanzamiento</span>
-          <span class="summary-value highlight">${capitalizar(formatearFecha(fechaLanz))}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Publicaciones por semana</span>
-          <span class="summary-value">${frecuencia} posts · ${TIPO_LABELS[tipoContenido]}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">Total de posts sugeridos</span>
-          <span class="summary-value">${totalPosts} posts + Historias diarias ⭕</span>
-        </div>
-      </div>
-    `;
-
-    const semanasHTML = semanasPlan.map(s => {
-      const style = FASE_STYLES[s.faseId];
-
-      const postsHTML = s.posts.map((post, pi) => `
-        <div class="post-card" style="--phase-color:${style.color}; --phase-bg:${style.bg}">
-          <div class="post-top">
-            <span class="post-format">${post.formato}</span>
-            <span class="post-number">Post ${pi + 1}</span>
-          </div>
-          <div class="post-tema">${post.tema}</div>
-          ${renderContenidoPost(post)}
-        </div>
-      `).join('');
-
-      const historiasHTML = s.historias.map(h => `
-        <div class="historia-item">
-          <span class="historia-dia">${h.dia}</span>
-          <div>
-            <div class="historia-tipo">${h.tipo}</div>
-            <div class="historia-sug">${h.sug}</div>
-          </div>
-        </div>
-      `).join('');
-
-      return `
-        <div class="week-card"
-             style="--phase-color:${style.color}; --phase-bg:${style.bg}">
-          <div class="week-header" style="background:${style.bg}">
-            <div class="week-meta">
-              <span class="week-number">Semana ${s.numero} de ${semanasPlan.length}</span>
-              <span class="week-dates">
-                ${capitalizar(formatearFecha(s.inicioSemana))} — ${capitalizar(formatearFecha(s.finSemana))}
-              </span>
-            </div>
-            <div class="phase-badge" style="background:${style.color}">
-              ${s.fase.emoji} ${s.fase.nombre}
-            </div>
-          </div>
-          <div class="week-body" style="--phase-color:${style.color}">
-            <div class="week-objetivo" style="border-color:${style.color}">
-              <strong style="color:${style.color}">Objetivo de esta semana:</strong>
-              ${s.fase.objetivo}
-            </div>
-            <div class="posts-grid">
-              ${postsHTML}
-            </div>
-            <div class="historias-section">
-              <div class="historias-header">⭕ Historias diarias — sugerencias para esta semana</div>
-              <div class="historias-grid">${historiasHTML}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    return `
-      <button class="btn-back" id="btn-back">← Editar datos</button>
-      <div class="result-heading">
-        <h2>Plan de lanzamiento para<br><span>${nombre}</span></h2>
-        <p>
-          ${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${frecuencia} posts/semana · ${TIPO_LABELS[tipoContenido]} + Historias diarias
-          &nbsp;<span class="tono-badge">${tonoInfo.emoji} Tono ${tonoInfo.nombre}</span>${badgeIA}
-        </p>
-        ${datos._audiencia ? `<p style="margin-top:0.5rem;font-size:0.83rem;color:#6b7280;">👥 Audiencia identificada: <em>${datos._audiencia}</em></p>` : ''}
-      </div>
-      ${summaryHTML}
-      ${semanasHTML}
-      <button class="btn-copy" id="btn-copy">📋 Copiar plan completo</button>
-      <div class="toast" id="toast">¡Plan copiado! Pégalo donde quieras 🚀</div>
-    `;
-  }
-
-  // ─────────────────────────────────────────────
-  //  TEXTO PLANO PARA COPIAR
-  // ─────────────────────────────────────────────
-
-  function generarTextoPlano(datos, plan) {
-    const { nombre, descripcion, semanas, social, frecuencia, tipoContenido, tono } = datos;
-    const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
-    const tonoInfo = TONOS[tono] || TONOS.empoderador;
-    const sep  = '═'.repeat(52);
-    const sep2 = '─'.repeat(52);
-
-    const lineas = [
-      sep,
-      `PLAN DE LANZAMIENTO: ${nombre.toUpperCase()}`,
-      sep,
-      `Producto:             ${nombre}`,
-      `Descripción:          ${descripcion}`,
-      `Tono de contenido:    ${tonoInfo.emoji} ${tonoInfo.nombre} — ${tonoInfo.desc}`,
-      `Semanas preventa:     ${semanas}`,
-      `Publicaciones/semana: ${frecuencia} (${TIPO_LABELS[tipoContenido]})`,
-      `Historias:            Diarias (incluidas en el plan)`,
-      `Inicio preventa:      ${capitalizar(formatearFecha(fechaIniPreventa))}`,
-      `Día lanzamiento:      ${capitalizar(formatearFecha(fechaLanz))}`,
-      `Posts sugeridos:      ${semanas * frecuencia} + Historias diarias`,
-      ''
-    ];
-
-    semanasPlan.forEach(s => {
-      lineas.push(sep);
-      lineas.push(`SEMANA ${s.numero} DE ${semanasPlan.length}  —  ${s.fase.emoji} ${s.fase.nombre.toUpperCase()}`);
-      lineas.push(`${capitalizar(formatearFecha(s.inicioSemana))} — ${capitalizar(formatearFecha(s.finSemana))}`);
-      lineas.push(sep);
-      lineas.push(`Objetivo: ${s.fase.objetivo}`);
-      lineas.push('');
-
-      s.posts.forEach((post, pi) => {
-        lineas.push(sep2);
-        lineas.push(`POST ${pi + 1}  ·  ${post.formato}`);
-        lineas.push(`Tema: ${post.tema}`);
-        lineas.push('');
-        if (post.esReel) {
-          const c = post.contenido;
-          lineas.push(`🎬 GUIÓN DEL REEL`);
-          lineas.push(`INTRO — Hook 3 segundos:`);
-          lineas.push(c.intro);
-          lineas.push('');
-          lineas.push(`DESARROLLO — El problema:`);
-          lineas.push(c.problema);
-          lineas.push('');
-          lineas.push(`DESARROLLO — La solución:`);
-          lineas.push(c.solucion);
-          lineas.push('');
-          lineas.push(`CIERRE — Llamada a la acción:`);
-          lineas.push(c.cta);
-          lineas.push('');
-          lineas.push(`📋 CAPTION LISTO PARA COPIAR:`);
-          lineas.push(c.caption);
-        } else {
-          const c = post.contenido;
-          lineas.push(`🖼️ GUIÓN DEL CARRUSEL`);
-          c.slides.forEach(sl => {
-            lineas.push(`SLIDE ${sl.num} — ${sl.label}:`);
-            lineas.push(sl.texto);
-            lineas.push('');
-          });
-          lineas.push(`📋 CAPTION LISTO PARA COPIAR:`);
-          lineas.push(c.caption);
-        }
-        lineas.push('');
-      });
-
-      lineas.push(sep2);
-      lineas.push(`⭕ HISTORIAS DIARIAS — SUGERENCIAS`);
-      s.historias.forEach(h => {
-        lineas.push(`  ${h.dia} · ${h.tipo}`);
-        lineas.push(`  ${h.sug}`);
-        lineas.push('');
-      });
-    });
-
-    lineas.push(sep);
-    lineas.push('Generado con Planificador de Lanzamiento — Club Geek');
-    lineas.push(sep);
-
-    return lineas.join('\n');
-  }
-
-  // ─────────────────────────────────────────────
-  //  VALIDACIÓN
-  // ─────────────────────────────────────────────
-
-  function validarFormulario() {
-    let valido = true;
-
-    const nombre = document.getElementById('product-name');
-    const desc   = document.getElementById('description');
-    const fecha  = document.getElementById('launch-date');
-
-    // Limpiar errores previos
-    [nombre, desc, fecha].forEach(el => {
-      el.classList.remove('invalid');
-    });
-    document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
-
-    if (!nombre.value.trim()) {
-      nombre.classList.add('invalid');
-      document.getElementById('err-name').style.display = 'block';
-      valido = false;
-    }
-    if (!desc.value.trim()) {
-      desc.classList.add('invalid');
-      document.getElementById('err-desc').style.display = 'block';
-      valido = false;
-    }
-    if (!fecha.value) {
-      fecha.classList.add('invalid');
-      document.getElementById('err-date').style.display = 'block';
-      valido = false;
-    } else {
-      const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0);
-      const [y, m, d] = fecha.value.split('-').map(Number);
-      const fechaElegida = new Date(y, m - 1, d);
-      if (fechaElegida < hoy) {
-        fecha.classList.add('invalid');
-        document.getElementById('err-date-pasada').style.display = 'block';
-        valido = false;
-      }
-    }
-
-    return valido;
-  }
-
-  // ─────────────────────────────────────────────
-  //  MOSTRAR / OCULTAR SECCIONES
-  // ─────────────────────────────────────────────
-
-  function mostrarResultado(html, datosPlan, planGenerado) {
-    const formSection   = document.getElementById('form-section');
-    const resultSection = document.getElementById('result-section');
-    const header        = document.getElementById('main-header');
-    const container     = document.getElementById('main-container');
-
-    resultSection.innerHTML = html;
-    resultSection.classList.add('visible');
-    formSection.style.display = 'none';
-    header.style.display = 'none';
-    container.classList.add('wide');
-    document.body.classList.add('showing-result');
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Botón "Copiar plan"
-    document.getElementById('btn-copy').addEventListener('click', () => {
-      const texto = generarTextoPlano(datosPlan, planGenerado);
-      navigator.clipboard.writeText(texto).then(() => {
-        const btn   = document.getElementById('btn-copy');
-        const toast = document.getElementById('toast');
-        btn.textContent = '✓ ¡Copiado!';
-        btn.classList.add('copied');
-        toast.classList.add('show');
-        setTimeout(() => {
-          btn.textContent = '📋 Copiar plan completo';
-          btn.classList.remove('copied');
-          toast.classList.remove('show');
-        }, 3000);
-      });
-    });
-
-    // Botón "Editar datos"
-    document.getElementById('btn-back').addEventListener('click', () => {
-      resultSection.classList.remove('visible');
-      resultSection.innerHTML = '';
-      formSection.style.display = 'block';
-      header.style.display = 'block';
-      container.classList.remove('wide');
-      document.body.classList.remove('showing-result');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // Botones de copiar caption individuales (delegación de eventos)
-    resultSection.addEventListener('click', (e) => {
-      const btn = e.target.closest('.btn-copy-caption');
-      if (!btn) return;
-      const caption = decodeURIComponent(btn.dataset.caption || '');
-      navigator.clipboard.writeText(caption).then(() => {
-        const prev = btn.textContent;
-        btn.textContent = '✓ Copiado';
-        btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = prev;
-          btn.classList.remove('copied');
-        }, 2500);
-      });
-    });
-  }
-
-  // ─────────────────────────────────────────────
-  //  EVENT LISTENER
-  // ─────────────────────────────────────────────
-
-  document.getElementById('launch-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (!validarFormulario()) return;
-
-    const datos = {
-      nombre:           document.getElementById('product-name').value.trim(),
-      descripcion:      document.getElementById('description').value.trim(),
-      fechaLanzamiento: document.getElementById('launch-date').value,
-      semanas:          parseInt(document.querySelector('input[name="weeks"]:checked').value, 10),
-      social:           document.querySelector('input[name="social"]:checked').value,
-      frecuencia:       parseInt(document.querySelector('input[name="frecuencia"]:checked').value, 10),
-      tipoContenido:    document.querySelector('input[name="tipo_contenido"]:checked').value,
-      tono:             document.querySelector('input[name="tono"]:checked').value
-    };
-
-    // Genera la estructura del plan (fechas, fases, temas)
-    const plan = generarPlan(datos);
-    const totalPosts = plan.semanasPlan.reduce((n, s) => n + s.posts.length, 0);
-
-    // Muestra pantalla de carga
-    const resultSection = document.getElementById('result-section');
-    activarPantallaResultado();
-    resultSection.innerHTML = renderCargando(datos.nombre, totalPosts);
-
-    const usarIA = GEMINI_API_KEY && GEMINI_API_KEY !== 'AIzaSyC69s1E6A9nlMj9dOvDhIog4z_sAfO75tc';
-
-    const ejecutarConIA = async () => {
-      const prompt = construirPrompt(datos, plan.semanasPlan);
-      const respuesta = await llamarGemini(prompt);
-      const audiencia = inyectarContenidoIA(plan.semanasPlan, respuesta);
-      if (audiencia) datos._audiencia = audiencia;
-      datos._generadoConIA = true;
-    };
-
-    const mostrarPlan = () => {
-      const html = renderResultado(datos, plan);
-      mostrarResultado(html, datos, plan);
-    };
-
-    const mostrarFallback = () => {
-      datos._generadoConIA = false;
-      mostrarPlan();
-    };
-
-    if (!usarIA) {
-      // Sin API key válida: usa contenido estático directamente
-      mostrarFallback();
-      return;
-    }
-
-    try {
-      await ejecutarConIA();
-      mostrarPlan();
-    } catch (err) {
-      console.error('Gemini error:', err);
-
-      // Muestra error con 3 opciones
-      resultSection.innerHTML = renderError(err.message);
-
-      document.getElementById('btn-reintentar').addEventListener('click', async () => {
-        resultSection.innerHTML = renderCargando(datos.nombre, totalPosts);
-        try {
-          await ejecutarConIA();
-          mostrarPlan();
-        } catch (err2) {
-          resultSection.innerHTML = renderError(err2.message);
-          // Re-adjunta listeners (recursión evitada: solo 1 reintento muestra el error final)
-          document.getElementById('btn-fallback')?.addEventListener('click', mostrarFallback);
-          document.getElementById('btn-volver-form')?.addEventListener('click', volverAlFormulario);
-        }
-      });
-
-      document.getElementById('btn-fallback').addEventListener('click', mostrarFallback);
-      document.getElementById('btn-volver-form').addEventListener('click', volverAlFormulario);
-    }
-  });
-
-  // Limpiar estado invalid en tiempo real
-  ['product-name', 'description', 'launch-date'].forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('input', () => {
-      el.classList.remove('invalid');
-      const errId = { 'product-name': 'err-name', 'description': 'err-desc', 'launch-date': 'err-date' }[id];
-      if (errId) document.getElementById(errId).style.display = 'none';
-      if (id === 'launch-date') document.getElementById('err-date-pasada').style.display = 'none';
-    });
-  });
-  </script>
-
+});
+</script>
 </body>
 </html>
