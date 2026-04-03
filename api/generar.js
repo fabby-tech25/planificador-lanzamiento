@@ -27,7 +27,7 @@ Día del post: ${diaPost}.
 Genera el contenido para un Reel específico para este nicho y momento del lanzamiento.
 
 Responde ÚNICAMENTE con este JSON válido, sin texto adicional ni markdown:
-{"hook":"gancho irresistible de 1 línea adaptado al nicho","problema":"2 líneas describiendo el dolor específico del cliente de este nicho","solucion":"2 líneas mostrando cómo el producto resuelve ese dolor puntual","cta":"1 línea de llamada a la acción concreta","caption":"3 líneas persuasivas con emojis relevantes al nicho y 8 hashtags específicos del nicho"}`;
+{"hook":"gancho irresistible de 1 línea adaptado al nicho","problema":"2 líneas describiendo el dolor específico del cliente","solucion":"2 líneas mostrando cómo el producto resuelve ese dolor","cta":"1 línea de llamada a la acción concreta","guion":"guión completo y fluido del reel en 120-150 palabras, con el hook al inicio, desarrollo del problema y solución, y cierre con el CTA, escrito como si lo estuvieras grabando","caption":"3 líneas persuasivas con emojis relevantes al nicho y 8 hashtags específicos del nicho"}`;
 }
 
 function buildPromptCarrusel({ producto, descripcion, tono, red_social, objetivoSemana, diaPost, semanaNum, postNum, totalSemanas }) {
@@ -83,7 +83,13 @@ async function llamarClaude(apiKey, prompt) {
   const data = await res.json();
   const rawText = data?.content?.[0]?.text;
   if (!rawText) throw new Error('Claude no devolvió texto');
-  return extraerJSON(rawText);
+
+  console.log('[Claude raw response]:', rawText);
+
+  const parsed = extraerJSON(rawText);
+  console.log('[Claude parsed JSON]:', JSON.stringify(parsed, null, 2));
+
+  return parsed;
 }
 
 export default async function handler(req, res) {
@@ -148,6 +154,7 @@ export default async function handler(req, res) {
           problema: postData.problema || '',
           solucion: postData.solucion || '',
           cta: postData.cta || '',
+          guion: postData.guion || postData.script || '',
           caption: postData.caption || '',
         });
       } else {
