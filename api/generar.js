@@ -1,4 +1,4 @@
-const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+const DIAS_SEMANA = ['Lunes', 'Miércoles', 'Viernes', 'Martes', 'Jueves'];
 
 function determinarTipo(tipo_contenido, indiceGlobal) {
   if (tipo_contenido === 'Solo Reels') return 'Reel';
@@ -12,28 +12,36 @@ function objetivoPorSemana(numeroSemana, totalSemanas) {
   return 'generar autoridad, mostrar resultados y rebatir objeciones';
 }
 
-function promptReel({ producto, descripcion, tono, red_social, objetivoSemana, diaPost, semanaNum, postNum, totalPosts }) {
-  return `Eres experto en marketing digital para ${red_social} en Latinoamérica.
-Producto: ${producto}
-Nicho: ${descripcion}
-Tono: ${tono}
-Semana ${semanaNum}, post ${postNum} de ${totalPosts}. Objetivo de esta semana: ${objetivoSemana}.
-Día sugerido: ${diaPost}.
-
-Devuelve SOLO este JSON, sin texto extra:
-{"hook":"una línea gancho irresistible","problema":"máximo 2 líneas describiendo el dolor del cliente","solucion":"máximo 2 líneas mostrando cómo el producto resuelve ese dolor","cta":"una línea llamada a la acción clara","caption":"3 líneas con emojis y 8 hashtags del nicho"}`;
+function asignarDia(indicePost) {
+  return DIAS_SEMANA[indicePost % DIAS_SEMANA.length];
 }
 
-function promptCarrusel({ producto, descripcion, tono, red_social, objetivoSemana, diaPost, semanaNum, postNum, totalPosts }) {
-  return `Eres experto en marketing digital para ${red_social} en Latinoamérica.
+function buildPromptReel({ producto, descripcion, tono, red_social, objetivoSemana, diaPost, semanaNum, postNum, totalSemanas }) {
+  return `Eres experto en marketing digital para ${red_social} en Latinoamérica. Tono: ${tono}.
+
 Producto: ${producto}
 Nicho: ${descripcion}
-Tono: ${tono}
-Semana ${semanaNum}, post ${postNum} de ${totalPosts}. Objetivo de esta semana: ${objetivoSemana}.
-Día sugerido: ${diaPost}.
+Semana ${semanaNum} de ${totalSemanas}. Objetivo de la semana: ${objetivoSemana}.
+Día del post: ${diaPost}.
 
-Devuelve SOLO este JSON, sin texto extra:
-{"portada":"título portada gancho en máximo 1 línea","slides":["slide 2 máximo 2 líneas","slide 3 máximo 2 líneas","slide 4 máximo 2 líneas","slide 5 cierre con cta máximo 2 líneas"],"caption":"3 líneas con emojis y 8 hashtags del nicho"}`;
+Genera el contenido para un Reel específico para este nicho y momento del lanzamiento.
+
+Responde ÚNICAMENTE con este JSON válido, sin texto adicional ni markdown:
+{"hook":"gancho irresistible de 1 línea adaptado al nicho","problema":"2 líneas describiendo el dolor específico del cliente de este nicho","solucion":"2 líneas mostrando cómo el producto resuelve ese dolor puntual","cta":"1 línea de llamada a la acción concreta","caption":"3 líneas persuasivas con emojis relevantes al nicho y 8 hashtags específicos del nicho"}`;
+}
+
+function buildPromptCarrusel({ producto, descripcion, tono, red_social, objetivoSemana, diaPost, semanaNum, postNum, totalSemanas }) {
+  return `Eres experto en marketing digital para ${red_social} en Latinoamérica. Tono: ${tono}.
+
+Producto: ${producto}
+Nicho: ${descripcion}
+Semana ${semanaNum} de ${totalSemanas}. Objetivo de la semana: ${objetivoSemana}.
+Día del post: ${diaPost}.
+
+Genera el contenido para un Carrusel específico para este nicho y momento del lanzamiento.
+
+Responde ÚNICAMENTE con este JSON válido, sin texto adicional ni markdown:
+{"portada":"título gancho de portada en 1 línea que invite a deslizar","slides":["slide 2 máximo 2 líneas con dato o idea concreta del nicho","slide 3 máximo 2 líneas","slide 4 máximo 2 líneas","slide 5 máximo 2 líneas con cierre y CTA"],"caption":"3 líneas persuasivas con emojis relevantes al nicho y 8 hashtags específicos del nicho"}`;
 }
 
 function extraerJSON(text) {
@@ -48,41 +56,34 @@ function extraerJSON(text) {
   } catch (_) {
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) return JSON.parse(match[0]);
-    throw new Error('No se encontró JSON válido en la respuesta');
+    throw new Error('No se encontró JSON válido en la respuesta de Claude');
   }
 }
 
-async function llamarGemini(apiKey, prompt) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.8,
-          maxOutputTokens: 512,
-        },
-      }),
-    }
-  );
+async function llamarClaude(apiKey, prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
 
   if (!res.ok) {
     const detail = await res.text();
-    throw new Error(`Gemini ${res.status}: ${detail}`);
+    throw new Error(`Claude API ${res.status}: ${detail}`);
   }
 
   const data = await res.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawText) throw new Error('Gemini no devolvió texto');
+  const rawText = data?.content?.[0]?.text;
+  if (!rawText) throw new Error('Claude no devolvió texto');
   return extraerJSON(rawText);
-}
-
-function asignarDias(numPosts) {
-  // Distribuye los posts en días de la semana de forma equilibrada
-  const diasBase = [DIAS_SEMANA[0], DIAS_SEMANA[2], DIAS_SEMANA[4], DIAS_SEMANA[1], DIAS_SEMANA[3]];
-  return Array.from({ length: numPosts }, (_, i) => diasBase[i % diasBase.length]);
 }
 
 export default async function handler(req, res) {
@@ -105,35 +106,37 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Faltan campos requeridos' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY no configurada' });
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY no configurada' });
   }
 
   const numSemanas = parseInt(semanas_preventa, 10);
   const numPosts = parseInt(frecuencia, 10);
-  const totalPosts = numSemanas * numPosts;
 
   const semanas = [];
   let indiceGlobal = 0;
 
   for (let s = 1; s <= numSemanas; s++) {
     const objetivoSemana = objetivoPorSemana(s, numSemanas);
-    const dias = asignarDias(numPosts);
     const posts = [];
 
     for (let p = 0; p < numPosts; p++) {
       const tipo = determinarTipo(tipo_contenido, indiceGlobal);
-      const diaPost = dias[p];
-      const contexto = { producto, descripcion, tono, red_social, objetivoSemana, diaPost, semanaNum: s, postNum: p + 1, totalPosts };
+      const diaPost = asignarDia(p);
+      const contexto = {
+        producto, descripcion, tono, red_social,
+        objetivoSemana, diaPost,
+        semanaNum: s, postNum: p + 1, totalSemanas: numSemanas,
+      };
 
-      const prompt = tipo === 'Reel' ? promptReel(contexto) : promptCarrusel(contexto);
+      const prompt = tipo === 'Reel' ? buildPromptReel(contexto) : buildPromptCarrusel(contexto);
 
       let postData;
       try {
-        postData = await llamarGemini(apiKey, prompt);
+        postData = await llamarClaude(apiKey, prompt);
       } catch (err) {
-        console.error(`Error en semana ${s} post ${p + 1}:`, err.message);
+        console.error(`Error semana ${s} post ${p + 1}:`, err.message);
         return res.status(502).json({ error: `Error generando semana ${s}, post ${p + 1}: ${err.message}` });
       }
 
