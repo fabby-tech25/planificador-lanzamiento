@@ -637,6 +637,172 @@
       box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.08) !important;
     }
 
+    /* ── Tone pills ── */
+    .tono-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+    }
+
+    .tono-pill input[type="radio"] { display: none; }
+
+    .tono-pill label {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0.85rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #f9fafb;
+      color: #6b7280;
+      font-size: 0.82rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      user-select: none;
+      gap: 0.15rem;
+      margin-bottom: 0;
+      line-height: 1.3;
+    }
+
+    .tono-pill label .tono-icon { font-size: 1.25rem; line-height: 1; margin-bottom: 0.15rem; }
+    .tono-pill label .tono-nombre { font-size: 0.88rem; font-weight: 700; color: #111827; }
+    .tono-pill label .tono-desc { font-size: 0.74rem; color: #9ca3af; }
+
+    .tono-pill input[type="radio"]:checked + label {
+      background: #eef4ff;
+      border-color: #1E6FFF;
+      box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.15);
+    }
+    .tono-pill input[type="radio"]:checked + label .tono-nombre { color: #1E6FFF; }
+    .tono-pill input[type="radio"]:checked + label .tono-desc { color: #4b8fff; }
+    .tono-pill label:hover { border-color: #1E6FFF; background: #eef4ff; }
+
+    /* ── Post content expandido ── */
+    .post-content { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.45rem; }
+
+    /* Reel — guión */
+    .script-section {
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+    }
+    .script-section.s-intro    { background: #fff8ec; border: 1.5px solid #fde68a; }
+    .script-section.s-problema { background: #fef2f2; border: 1.5px solid #fecaca; }
+    .script-section.s-solucion { background: #f0fdf4; border: 1.5px solid #bbf7d0; }
+    .script-section.s-cta      { background: #eef4ff; border: 1.5px solid #bfdbfe; }
+    .script-label {
+      font-size: 0.67rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+    .s-intro    .script-label { color: #92400e; }
+    .s-problema .script-label { color: #991b1b; }
+    .s-solucion .script-label { color: #166534; }
+    .s-cta      .script-label { color: #1e40af; }
+    .script-text {
+      font-size: 0.84rem;
+      color: #374151;
+      line-height: 1.58;
+      white-space: pre-line;
+    }
+
+    /* Carrusel — slides */
+    .slide-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 0.55rem;
+      align-items: start;
+      padding: 0.65rem 0.75rem;
+      border-radius: 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .slide-item.portada { background: #1E6FFF; border-color: #1E6FFF; }
+    .slide-num-col { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; padding-top: 0.1rem; }
+    .slide-num {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #9ca3af;
+      text-align: center;
+      line-height: 1;
+    }
+    .slide-item.portada .slide-num { color: rgba(255,255,255,0.6); }
+    .slide-label {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      margin-bottom: 0.2rem;
+    }
+    .slide-item.portada .slide-label { color: rgba(255,255,255,0.6); }
+    .slide-text {
+      font-size: 0.83rem;
+      color: #374151;
+      line-height: 1.52;
+      white-space: pre-line;
+    }
+    .slide-item.portada .slide-text { color: #fff; font-weight: 700; font-size: 0.88rem; }
+
+    /* Caption */
+    .post-caption {
+      margin-top: 0.25rem;
+      padding: 0.8rem 0.9rem;
+      background: #fafafa;
+      border: 1.5px dashed #d1d5db;
+      border-radius: 10px;
+    }
+    .caption-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+    .caption-label {
+      font-size: 0.67rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b7280;
+    }
+    .caption-text {
+      font-size: 0.83rem;
+      color: #374151;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+    .btn-copy-caption {
+      background: none;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .btn-copy-caption:hover { border-color: #1E6FFF; color: #1E6FFF; background: #eef4ff; }
+    .btn-copy-caption.copied { border-color: #059669; color: #059669; background: #f0fdf4; }
+
+    /* Tono badge en resultado */
+    .tono-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #eef4ff;
+      color: #1E6FFF;
+      border: 1px solid #bfdbfe;
+    }
+
     @media (max-width: 560px) {
       .card { padding: 1.75rem 1.25rem; }
       .header h1 { font-size: 1.65rem; }
@@ -786,6 +952,46 @@
 
           <div class="divider"></div>
 
+          <div class="form-group">
+            <label><span class="icon">🎙️</span> Tono del contenido</label>
+            <div class="tono-grid">
+              <div class="tono-pill">
+                <input type="radio" id="tono-empoderador" name="tono" value="empoderador" checked />
+                <label for="tono-empoderador">
+                  <span class="tono-icon">💪</span>
+                  <span class="tono-nombre">Empoderador</span>
+                  <span class="tono-desc">Inspira y motiva</span>
+                </label>
+              </div>
+              <div class="tono-pill">
+                <input type="radio" id="tono-cercano" name="tono" value="cercano" />
+                <label for="tono-cercano">
+                  <span class="tono-icon">🤝</span>
+                  <span class="tono-nombre">Cercano</span>
+                  <span class="tono-desc">Como hablar con una amiga</span>
+                </label>
+              </div>
+              <div class="tono-pill">
+                <input type="radio" id="tono-urgente" name="tono" value="urgente" />
+                <label for="tono-urgente">
+                  <span class="tono-icon">⚡</span>
+                  <span class="tono-nombre">Urgente</span>
+                  <span class="tono-desc">Genera acción inmediata</span>
+                </label>
+              </div>
+              <div class="tono-pill">
+                <input type="radio" id="tono-educativo" name="tono" value="educativo" />
+                <label for="tono-educativo">
+                  <span class="tono-icon">📚</span>
+                  <span class="tono-nombre">Educativo</span>
+                  <span class="tono-desc">Enseña y genera autoridad</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
           <button type="submit" class="btn-submit">
             <span class="accent">★</span> Generar Plan de Lanzamiento
           </button>
@@ -815,6 +1021,13 @@
     reels:      'Solo Reels',
     carruseles: 'Solo Carruseles',
     combinado:  'Reels y Carruseles'
+  };
+
+  const TONOS = {
+    empoderador: { nombre: 'Empoderador', emoji: '💪', desc: 'Inspira y motiva' },
+    cercano:     { nombre: 'Cercano',     emoji: '🤝', desc: 'Como hablar con una amiga' },
+    urgente:     { nombre: 'Urgente',     emoji: '⚡', desc: 'Genera acción inmediata' },
+    educativo:   { nombre: 'Educativo',   emoji: '📚', desc: 'Enseña y genera autoridad' }
   };
 
   // Colores y fondos por fase
@@ -1026,11 +1239,218 @@
   };
 
   // ─────────────────────────────────────────────
+  //  GENERADORES DE CONTENIDO POR FORMATO Y TONO
+  // ─────────────────────────────────────────────
+
+  function generarContenidoReel(nombre, descripcion, tema, faseId, tono) {
+    const d = recortar(descripcion, 75);
+
+    const intros = {
+      empoderador: {
+        expectativa: `"¿Lista para lo que viene? Porque ${nombre} llega pronto y va a cambiar todo lo que creías posible. Quédate hasta el final."`,
+        deseo:       `"Hay personas que logran resultados increíbles mientras otras siguen esperando el momento perfecto. La diferencia es una: ${nombre}."`,
+        urgencia:    `"Voy a ser directa: tienes muy poco tiempo para decidir. Y tú ya sabes que mereces dar este paso. ${nombre} cierra pronto."`,
+        cierre:      `"¡Llegó TU momento! ${nombre} ya está disponible y estoy aquí para decirte que PUEDES. Que estás lista. Que es ahora mismo."`
+      },
+      cercano: {
+        expectativa: `"Oye, me muero de ganas de contarte lo que viene... pero todavía no puedo. Solo te digo: activa las notificaciones. Confía en mí. 🤫"`,
+        deseo:       `"Espera, espera — necesito que veas esto porque lo que ${nombre} hace por personas como tú es de verdad increíble. Te lo juro."`,
+        urgencia:    `"Mira, te digo como si fueras mi mejor amiga: ${nombre} se va a cerrar pronto y de verdad no quiero que te quedes fuera."`,
+        cierre:      `"¡¡Amiga!! ¡¡Ya llegó!! ${nombre} está disponible desde HOY y quiero que seas de las primeras. ¡Enlace en bio, vamos! 🎉"`
+      },
+      urgente: {
+        expectativa: `"PAUSA. Antes de seguir scrolleando: algo que puede cambiar tu situación está por llegar. Esto no lo puedes ignorar."`,
+        deseo:       `"No tengo tiempo para rodeos: ${nombre} es exactamente lo que necesitas y el acceso es limitado. Mira esto hasta el final."`,
+        urgencia:    `"⚡ ALERTA. ${nombre} cierra en días. Cada segundo que sigues dudando es un segundo que alguien más está aprovechando."`,
+        cierre:      `"¡ABRIÓ! ${nombre} está disponible AHORA MISMO. Acceso limitado. Si estás viendo esto, todavía puedes entrar. ¡YA!"`
+      },
+      educativo: {
+        expectativa: `"Hoy quiero hablarte de algo que la mayoría ignora — y que es exactamente por qué ${nombre} existe. Quédate hasta el final."`,
+        deseo:       `"Antes de que ${nombre} abra, quiero que entiendas exactamente qué vas a recibir y por qué funciona. Es información importante."`,
+        urgencia:    `"Hay razones muy específicas por las que actuar en los primeros días de un lanzamiento marca toda la diferencia. Te las explico."`,
+        cierre:      `"En los próximos 60 segundos te explico exactamente qué es ${nombre}, cómo funciona y qué vas a lograr. Quédate."`
+      }
+    };
+
+    const problemas = {
+      expectativa: `¿Cuántas veces has intentado avanzar y algo siempre te detiene?\n\nNo es falta de ganas. Es que hasta ahora no tenías las herramientas correctas para ${d}.`,
+      deseo:       `El problema real no es la falta de información. Es la falta de un sistema claro y probado.\n\n${nombre} fue diseñado exactamente para eso: ${d}.`,
+      urgencia:    `Seguir esperando el "momento perfecto" tiene un costo real. Cada semana que pasa sin acción es tiempo y resultados que no vuelven.`,
+      cierre:      `El único obstáculo que te separa de tus resultados eres tú misma — y ese obstáculo desaparece hoy con ${nombre}.`
+    };
+
+    const soluciones = {
+      expectativa: `${nombre} viene a resolver exactamente eso. No es una promesa genérica — es una solución diseñada para tu realidad y tu momento.`,
+      deseo:       `Con ${nombre} tienes acceso a un método paso a paso. Sin adivinar, sin perder tiempo, sin frustraciones. Solo resultados reales.`,
+      urgencia:    `${nombre} te da todo lo que necesitas para empezar ahora mismo. Sistema claro, herramientas listas, resultados desde el día 1.`,
+      cierre:      `${nombre} ya está abierto. Accedes hoy y desde el primer minuto tienes claridad, método y todo lo que necesitas para avanzar.`
+    };
+
+    const ctas = {
+      empoderador: {
+        expectativa: `"Activa las notificaciones ahora. Lo que viene va a inspirarte a dar tu siguiente paso. Tú ya estás lista. 💙"`,
+        deseo:       `"Guarda este video. Y cuando ${nombre} abra, recuerda este momento en que supiste que era para ti. 💙"`,
+        urgencia:    `"Enlace en bio para la lista de espera. Da ese paso ahora. Mereces estar adentro. Tu versión futura te lo agradece. 🚀"`,
+        cierre:      `"Enlace en bio. Da el paso ahora mismo. Tu versión futura ya te está esperando. 🚀"`
+      },
+      cercano: {
+        expectativa: `"Comenta 'ya' si quieres que te avise cuando lo anuncie. ¡Te mando info antes que a nadie! 💌"`,
+        deseo:       `"¿Te identificaste? Cuéntame en comentarios. Y si quieres más info de ${nombre}, escríbeme — te cuento todo. ✨"`,
+        urgencia:    `"Escríbeme por DM si tienes dudas — te respondo hoy mismo. No quiero que te quedes fuera, de verdad. 🤍"`,
+        cierre:      `"Enlace en bio. Y si tienes preguntas, escríbeme ahora — te respondo en minutos. ¡Estoy aquí para ti! 💬"`
+      },
+      urgente: {
+        expectativa: `"¡Activa las notificaciones YA para no perderte el anuncio! No digas que no te avisé."`,
+        deseo:       `"Lista de espera: ENLACE EN BIO. Hazlo AHORA antes de que se llene. ¡Sí, ahora!"`,
+        urgencia:    `"ENLACE EN BIO. Lista de espera abierta. Hazlo AHORA antes de que cierre. ¡Sin excusas!"`,
+        cierre:      `"ENLACE EN BIO. Acceso disponible HOY. Limitado. ¡No esperes más!"`
+      },
+      educativo: {
+        expectativa: `"Guarda este video y activa notificaciones para recibir información completa sobre ${nombre}."`,
+        deseo:       `"Si quieres saber cómo funciona ${nombre} para tu situación específica, escríbeme. Te explico con detalle."`,
+        urgencia:    `"El enlace de la lista de espera está en bio. Te recomiendo leer toda la información antes de decidir."`,
+        cierre:      `"Toda la información sobre ${nombre} está en el enlace de bio. Léela con calma y toma la decisión correcta para ti."`
+      }
+    };
+
+    const emojisTono = { empoderador: '💪✨🚀', cercano: '🤍💬✨', urgente: '⚡🔥⏰', educativo: '📚💡🎯' };
+    const hashtagsCierre = {
+      empoderador: '#lanzamiento #emprendedora #transformacion',
+      cercano:     '#emprendedora #comunidad #contigo',
+      urgente:     '#ahoraonunca #lanzamiento #accion',
+      educativo:   '#aprendizaje #estrategia #resultados'
+    };
+
+    const intro    = (intros[tono]    || intros.empoderador)[faseId]    || `"Tengo algo importante que contarte sobre ${nombre}."`;
+    const problema = problemas[faseId]  || `El desafío es real: ${d}`;
+    const solucion = soluciones[faseId] || `${nombre} es la respuesta que estabas buscando.`;
+    const cta      = ((ctas[tono]      || ctas.empoderador)[faseId])    || `"Enlace en bio para ${nombre}."`;
+
+    const hookCaption = intro.replace(/^"|"$/g, '');
+    const caption = `${emojisTono[tono]} ${hookCaption}\n\n👉 ${tema}\n\n💾 Guarda este video · Comparte si te resonó\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
+
+    return { intro, problema, solucion, cta, caption };
+  }
+
+  function generarContenidoCarrusel(nombre, descripcion, tema, faseId, tono) {
+    const d50 = recortar(descripcion, 55);
+    const d80 = recortar(descripcion, 80);
+
+    const portadas = {
+      empoderador: {
+        expectativa: `${tema.toUpperCase()}: Lo que nadie te había dicho`,
+        deseo:       `La transformación que SÍ es posible con ${nombre}`,
+        urgencia:    `Por qué esperar te está costando más de lo que crees`,
+        cierre:      `${nombre} ya está aquí: tu momento es AHORA`
+      },
+      cercano: {
+        expectativa: `${tema}: lo que necesitaba que supieras`,
+        deseo:       `Cómo ${nombre} cambia todo (y por qué es para ti)`,
+        urgencia:    `Entre nosotras: lo que pasa si esperas demasiado`,
+        cierre:      `¡${nombre} llegó! Y quiero que seas de las primeras`
+      },
+      urgente: {
+        expectativa: `⚡ ${tema.toUpperCase()}: ¿ya lo sabías?`,
+        deseo:       `Por qué necesitas ${nombre} AHORA MISMO`,
+        urgencia:    `TIEMPO LIMITADO: lo que pierdes cada día que esperas`,
+        cierre:      `${nombre.toUpperCase()} ABRIÓ: quedan pocas horas`
+      },
+      educativo: {
+        expectativa: `${tema}: guía completa para entenderlo`,
+        deseo:       `Los 5 pilares de ${nombre} que lo hacen diferente`,
+        urgencia:    `Por qué el timing importa: la guía de ${nombre}`,
+        cierre:      `Todo sobre ${nombre}: lo que debes saber antes de decidir`
+      }
+    };
+
+    const slide2s = {
+      expectativa: `Hay algo que la mayoría ignora sobre ${d50}.\n\nY esa brecha tiene un costo real en tus resultados.`,
+      deseo:       `Cuando ${nombre} llegue a tus manos, vas a entender por qué tantas personas llevaban tiempo buscando exactamente esto.`,
+      urgencia:    `Quiero ser honesta contigo: cada semana que pasa sin tomar acción es tiempo que no vuelve.\n\nY la evidencia lo confirma.`,
+      cierre:      `${nombre} ya está disponible. Antes de que entres, quiero que entiendas exactamente qué recibes y qué vas a lograr.`
+    };
+
+    const slide3s = {
+      expectativa: `¿Te ha pasado?\n\n→ Intentas avanzar y algo siempre te detiene\n→ Sientes que te falta una pieza clave\n→ Ves a otras personas lograr lo que tú quieres\n\nNo es suerte. Es sistema.`,
+      deseo:       `El problema real no es:\n\n✗ Falta de ganas\n✗ No tener suficiente tiempo\n✗ No ser suficiente\n\nEl problema es no tener el método correcto para ${d50}.`,
+      urgencia:    `Quienes deciden rápido obtienen:\n\n→ Acceso prioritario desde el inicio\n→ Mejores resultados más rápido\n→ La energía del comienzo\n\nQuienes esperan... pierden todo eso.`,
+      cierre:      `Lo que ${nombre} NO es:\n\n✗ Otro curso genérico sin aplicación\n✗ Información que ya viste gratis\n✗ Una promesa sin respaldo real\n\nLo que SÍ es → siguiente slide`
+    };
+
+    const slide4s = {
+      expectativa: `Por eso viene ${nombre}.\n\nUn sistema diseñado específicamente para ${d80}.\n\nNo genérico. No teórico.\nReal y aplicable desde el día 1.`,
+      deseo:       `Con ${nombre} tendrás:\n\n✓ Un método claro y paso a paso\n✓ Las herramientas exactas que necesitas\n✓ El acompañamiento correcto\n\nTodo en un solo lugar.`,
+      urgencia:    `${nombre} resuelve exactamente esto:\n\n→ Claridad inmediata sobre qué hacer primero\n→ Sistema probado que funciona\n→ Resultados visibles desde el inicio\n\nPero el acceso cierra pronto.`,
+      cierre:      `${nombre} ES:\n\n✓ Sistema completo para ${d50}\n✓ Contenido práctico y aplicable\n✓ Método probado con resultados reales\n\nEsto es lo que te llevas.`
+    };
+
+    const slide5s = {
+      empoderador: {
+        expectativa: `Cuando ${nombre} llegue, podrás:\n\n💪 Avanzar con confianza real\n🎯 Tener claridad sobre tu siguiente paso\n✨ Crear el negocio o resultado que mereces\n\nEsto es lo que mereces lograr.`,
+        deseo:       `Esto es lo que logran quienes trabajan con ${nombre}:\n\n💪 Resultados reales y medibles\n🎯 Método claro sin adivinar\n✨ Confianza para avanzar sin frenos internos`,
+        urgencia:    `Quienes entran ahora a ${nombre} van a:\n\n💪 Tomar ventaja real desde el inicio\n🎯 Implementar desde el primer día\n⚡ Ver resultados antes que nadie más`,
+        cierre:      `Lo que cambia cuando entras a ${nombre}:\n\n💪 De la confusión → a la claridad total\n🎯 Del "quiero" → al "ya lo estoy logrando"\n✨ Del statu quo → a los resultados que mereces`
+      },
+      cercano: {
+        expectativa: `Lo que quiero para ti con ${nombre}:\n\n🤍 Que dejes de sentirte estancada\n✨ Que tengas un plan claro de verdad\n💬 Que no sientas que estás sola en esto`,
+        deseo:       `Con ${nombre}, imagina:\n\n🤍 Tener exactamente lo que necesitas\n✨ Avanzar sin tener que adivinar\n💬 Sentirte acompañada en cada paso`,
+        urgencia:    `Si entras a ${nombre} ahora:\n\n🤍 Te ahorras semanas de prueba y error\n✨ Empiezas con todo preparado y listo\n💬 Tienes apoyo real desde el día 1`,
+        cierre:      `Ya adentro de ${nombre} vas a:\n\n🤍 Sentirte segura en cada decisión\n✨ Ver resultados que puedes compartir\n💬 Ser parte de una comunidad real`
+      },
+      urgente: {
+        expectativa: `${nombre} viene con:\n\n⚡ Sistema de implementación rápida\n🔥 Resultados medibles desde la semana 1\n⏰ Sin perder tiempo en lo que no funciona`,
+        deseo:       `Por qué ${nombre} genera resultados:\n\n⚡ Metodología probada y directa\n🔥 Aplicación inmediata desde el inicio\n⏰ Diseñado para resultados en tiempo real`,
+        urgencia:    `Si actúas AHORA en ${nombre}:\n\n⚡ Acceso inmediato desde hoy\n🔥 Ventaja clara sobre quienes esperan\n⏰ Acceso al mejor precio antes del cierre`,
+        cierre:      `${nombre} abierto = tu ventaja competitiva:\n\n⚡ Implementación desde HOY mismo\n🔥 Resultados que se ven rápido\n⏰ Sin más excusas de "mañana empiezo"`
+      },
+      educativo: {
+        expectativa: `Lo que ${nombre} te va a enseñar:\n\n📚 El método completo paso a paso\n💡 Por qué funciona y cómo aplicarlo\n🎯 Métricas claras para medir tu avance`,
+        deseo:       `Aprendizajes clave dentro de ${nombre}:\n\n📚 Framework probado con casos reales\n💡 Estrategias aplicables desde el inicio\n🎯 Plan de implementación personalizado`,
+        urgencia:    `Por qué acceder a ${nombre} ahora:\n\n📚 Precio de lanzamiento más accesible\n💡 Acceso a todos los recursos desde el inicio\n🎯 Comunidad activa en su mejor momento`,
+        cierre:      `Dentro de ${nombre} encontrarás:\n\n📚 Módulos estructurados y progresivos\n💡 Material práctico con aplicación directa\n🎯 Sistema de seguimiento de resultados`
+      }
+    };
+
+    const slide6s = {
+      empoderador: `Tú ya sabes que esto es para ti.\n\nLo único que falta es dar el paso.\n\n→ Enlace en bio\n\n💙 ${nombre} te está esperando.`,
+      cercano:     `Si llegaste hasta aquí, es una señal.\n\n¿Hablamos? Escríbeme por DM\no entra directo desde el enlace en bio.\n\n🤍 Te espero adentro de ${nombre}.`,
+      urgente:     `NO LO DEJES PARA DESPUÉS.\n\n→ ENLACE EN BIO — AHORA MISMO\n\n⏰ ${nombre} es por tiempo limitado.\n¡Esta es tu última oportunidad!`,
+      educativo:   `Decisión informada = mejor resultado.\n\nYa tienes toda la información.\nEl siguiente paso es tuyo.\n\n→ Enlace en bio para acceder a ${nombre}.`
+    };
+
+    const emojisTono = { empoderador: '💪✨🚀', cercano: '🤍💬✨', urgente: '⚡🔥⏰', educativo: '📚💡🎯' };
+    const hashtagsCierre = {
+      empoderador: '#lanzamiento #emprendedora #transformacion',
+      cercano:     '#emprendedora #comunidad #contigo',
+      urgente:     '#ahoraonunca #lanzamiento #accion',
+      educativo:   '#aprendizaje #estrategia #resultados'
+    };
+
+    const portada = ((portadas[tono] || portadas.empoderador)[faseId]) || tema;
+    const s5      = ((slide5s[tono]  || slide5s.empoderador)[faseId])  || `Con ${nombre} lograrás resultados reales.`;
+    const s6      = (slide6s[tono]   || slide6s.empoderador);
+
+    const caption = `${emojisTono[tono]} ${portada}\n\n👉 Guarda este carrusel — esta info vale mucho\n💬 ¿Cuál slide te llegó más? Cuéntame\n\n${hashtagsCierre[tono]} #${nombre.replace(/\s+/g,'').toLowerCase()}`;
+
+    return {
+      slides: [
+        { num: 1, label: 'PORTADA',         texto: portada },
+        { num: 2, label: 'CONTEXTO',        texto: slide2s[faseId] || `${tema}: hay algo que debes saber.` },
+        { num: 3, label: 'EL PROBLEMA',     texto: slide3s[faseId] || `¿Te ha pasado? Sigue leyendo.` },
+        { num: 4, label: 'LA SOLUCIÓN',     texto: slide4s[faseId] || `${nombre} lo resuelve así:` },
+        { num: 5, label: 'LO QUE LOGRARÁS', texto: s5 },
+        { num: 6, label: 'SIGUIENTE PASO',  texto: s6 }
+      ],
+      caption
+    };
+  }
+
+  // ─────────────────────────────────────────────
   //  GENERADOR DE PLAN
   // ─────────────────────────────────────────────
 
   function generarPlan(datos) {
-    const { nombre, descripcion, fechaLanzamiento, semanas, frecuencia, tipoContenido } = datos;
+    const { nombre, descripcion, fechaLanzamiento, semanas, frecuencia, tipoContenido, tono } = datos;
     const faseIds  = FASES_POR_SEMANAS[semanas];
     const fechaLanz = parsearFecha(fechaLanzamiento);
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
@@ -1042,10 +1462,16 @@
       const inicioSemana = sumarDias(fechaIniPreventa, idx * 7);
       const finSemana    = sumarDias(inicioSemana, 6);
       const fase         = FASES[faseId];
-      // Tomar solo N posts según frecuencia y asignar formato según tipo de contenido
       const posts = fase.posts(nombre, descripcion)
         .slice(0, frecuencia)
-        .map((post, i) => ({ ...post, formato: getFormato(tipoContenido, i) }));
+        .map((post, i) => {
+          const formato = getFormato(tipoContenido, i);
+          const esReel  = formato.includes('Reel');
+          const contenido = esReel
+            ? generarContenidoReel(nombre, descripcion, post.tema, faseId, tono)
+            : generarContenidoCarrusel(nombre, descripcion, post.tema, faseId, tono);
+          return { ...post, formato, contenido, esReel };
+        });
       const historias = fase.historias(nombre);
       return { numero: idx + 1, faseId, fase, inicioSemana, finSemana, posts, historias };
     });
@@ -1057,10 +1483,69 @@
   //  RENDER HTML
   // ─────────────────────────────────────────────
 
+  function renderContenidoPost(post) {
+    if (post.esReel) {
+      const c = post.contenido;
+      return `
+        <div class="post-content">
+          <div class="script-section s-intro">
+            <div class="script-label">🎬 Intro — Hook 3 segundos</div>
+            <div class="script-text">${c.intro}</div>
+          </div>
+          <div class="script-section s-problema">
+            <div class="script-label">⚡ Desarrollo — El problema</div>
+            <div class="script-text">${c.problema}</div>
+          </div>
+          <div class="script-section s-solucion">
+            <div class="script-label">✅ Desarrollo — La solución</div>
+            <div class="script-text">${c.solucion}</div>
+          </div>
+          <div class="script-section s-cta">
+            <div class="script-label">👆 Cierre — Llamada a la acción</div>
+            <div class="script-text">${c.cta}</div>
+          </div>
+          <div class="post-caption">
+            <div class="caption-header">
+              <span class="caption-label">📋 Caption listo para copiar</span>
+              <button class="btn-copy-caption" data-caption="${encodeURIComponent(c.caption)}">Copiar</button>
+            </div>
+            <div class="caption-text">${c.caption}</div>
+          </div>
+        </div>
+      `;
+    } else {
+      const c = post.contenido;
+      const slidesHTML = c.slides.map(s => `
+        <div class="slide-item ${s.num === 1 ? 'portada' : ''}">
+          <div class="slide-num-col">
+            <span class="slide-num">${s.num}</span>
+          </div>
+          <div>
+            <div class="slide-label">${s.label}</div>
+            <div class="slide-text">${s.texto}</div>
+          </div>
+        </div>
+      `).join('');
+      return `
+        <div class="post-content">
+          ${slidesHTML}
+          <div class="post-caption">
+            <div class="caption-header">
+              <span class="caption-label">📋 Caption listo para copiar</span>
+              <button class="btn-copy-caption" data-caption="${encodeURIComponent(c.caption)}">Copiar</button>
+            </div>
+            <div class="caption-text">${c.caption}</div>
+          </div>
+        </div>
+      `;
+    }
+  }
+
   function renderResultado(datos, plan) {
-    const { nombre, semanas, social, frecuencia, tipoContenido } = datos;
+    const { nombre, semanas, social, frecuencia, tipoContenido, tono } = datos;
     const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
     const totalPosts = semanas * frecuencia;
+    const tonoInfo   = TONOS[tono] || TONOS.empoderador;
 
     const summaryHTML = `
       <div class="summary-card">
@@ -1093,7 +1578,7 @@
             <span class="post-number">Post ${pi + 1}</span>
           </div>
           <div class="post-tema">${post.tema}</div>
-          <div class="post-hook">${post.hook}</div>
+          ${renderContenidoPost(post)}
         </div>
       `).join('');
 
@@ -1142,7 +1627,10 @@
       <button class="btn-back" id="btn-back">← Editar datos</button>
       <div class="result-heading">
         <h2>Plan de lanzamiento para<br><span>${nombre}</span></h2>
-        <p>${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${frecuencia} posts/semana · ${TIPO_LABELS[tipoContenido]} + Historias diarias</p>
+        <p>
+          ${semanas} ${semanas === 1 ? 'semana' : 'semanas'} de preventa · ${frecuencia} posts/semana · ${TIPO_LABELS[tipoContenido]} + Historias diarias
+          &nbsp;<span class="tono-badge">${tonoInfo.emoji} Tono ${tonoInfo.nombre}</span>
+        </p>
       </div>
       ${summaryHTML}
       ${semanasHTML}
@@ -1156,23 +1644,25 @@
   // ─────────────────────────────────────────────
 
   function generarTextoPlano(datos, plan) {
-    const { nombre, descripcion, semanas, social, frecuencia, tipoContenido } = datos;
+    const { nombre, descripcion, semanas, social, frecuencia, tipoContenido, tono } = datos;
     const { semanasPlan, fechaIniPreventa, fechaLanz } = plan;
-    const sep  = '═'.repeat(48);
-    const sep2 = '─'.repeat(48);
+    const tonoInfo = TONOS[tono] || TONOS.empoderador;
+    const sep  = '═'.repeat(52);
+    const sep2 = '─'.repeat(52);
 
     const lineas = [
       sep,
       `PLAN DE LANZAMIENTO: ${nombre.toUpperCase()}`,
       sep,
-      `Producto:            ${nombre}`,
-      `Descripción:         ${descripcion}`,
-      `Semanas preventa:    ${semanas}`,
+      `Producto:             ${nombre}`,
+      `Descripción:          ${descripcion}`,
+      `Tono de contenido:    ${tonoInfo.emoji} ${tonoInfo.nombre} — ${tonoInfo.desc}`,
+      `Semanas preventa:     ${semanas}`,
       `Publicaciones/semana: ${frecuencia} (${TIPO_LABELS[tipoContenido]})`,
-      `Historias:           Diarias (incluidas en el plan)`,
-      `Inicio preventa:     ${capitalizar(formatearFecha(fechaIniPreventa))}`,
-      `Día lanzamiento:     ${capitalizar(formatearFecha(fechaLanz))}`,
-      `Posts sugeridos:     ${semanas * frecuencia} + Historias diarias`,
+      `Historias:            Diarias (incluidas en el plan)`,
+      `Inicio preventa:      ${capitalizar(formatearFecha(fechaIniPreventa))}`,
+      `Día lanzamiento:      ${capitalizar(formatearFecha(fechaLanz))}`,
+      `Posts sugeridos:      ${semanas * frecuencia} + Historias diarias`,
       ''
     ];
 
@@ -1185,14 +1675,42 @@
       lineas.push('');
 
       s.posts.forEach((post, pi) => {
-        lineas.push(`${sep2}`);
+        lineas.push(sep2);
         lineas.push(`POST ${pi + 1}  ·  ${post.formato}`);
         lineas.push(`Tema: ${post.tema}`);
-        lineas.push(`Hook: ${post.hook}`);
+        lineas.push('');
+        if (post.esReel) {
+          const c = post.contenido;
+          lineas.push(`🎬 GUIÓN DEL REEL`);
+          lineas.push(`INTRO — Hook 3 segundos:`);
+          lineas.push(c.intro);
+          lineas.push('');
+          lineas.push(`DESARROLLO — El problema:`);
+          lineas.push(c.problema);
+          lineas.push('');
+          lineas.push(`DESARROLLO — La solución:`);
+          lineas.push(c.solucion);
+          lineas.push('');
+          lineas.push(`CIERRE — Llamada a la acción:`);
+          lineas.push(c.cta);
+          lineas.push('');
+          lineas.push(`📋 CAPTION LISTO PARA COPIAR:`);
+          lineas.push(c.caption);
+        } else {
+          const c = post.contenido;
+          lineas.push(`🖼️ GUIÓN DEL CARRUSEL`);
+          c.slides.forEach(sl => {
+            lineas.push(`SLIDE ${sl.num} — ${sl.label}:`);
+            lineas.push(sl.texto);
+            lineas.push('');
+          });
+          lineas.push(`📋 CAPTION LISTO PARA COPIAR:`);
+          lineas.push(c.caption);
+        }
         lineas.push('');
       });
 
-      lineas.push(`${sep2}`);
+      lineas.push(sep2);
       lineas.push(`⭕ HISTORIAS DIARIAS — SUGERENCIAS`);
       s.historias.forEach(h => {
         lineas.push(`  ${h.dia} · ${h.tipo}`);
@@ -1300,6 +1818,22 @@
       document.body.classList.remove('showing-result');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+
+    // Botones de copiar caption individuales (delegación de eventos)
+    resultSection.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-copy-caption');
+      if (!btn) return;
+      const caption = decodeURIComponent(btn.dataset.caption || '');
+      navigator.clipboard.writeText(caption).then(() => {
+        const prev = btn.textContent;
+        btn.textContent = '✓ Copiado';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = prev;
+          btn.classList.remove('copied');
+        }, 2500);
+      });
+    });
   }
 
   // ─────────────────────────────────────────────
@@ -1318,7 +1852,8 @@
       semanas:          parseInt(document.querySelector('input[name="weeks"]:checked').value, 10),
       social:           document.querySelector('input[name="social"]:checked').value,
       frecuencia:       parseInt(document.querySelector('input[name="frecuencia"]:checked').value, 10),
-      tipoContenido:    document.querySelector('input[name="tipo_contenido"]:checked').value
+      tipoContenido:    document.querySelector('input[name="tipo_contenido"]:checked').value,
+      tono:             document.querySelector('input[name="tono"]:checked').value
     };
 
     const plan = generarPlan(datos);
