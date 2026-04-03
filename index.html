@@ -538,14 +538,26 @@ function buildPostCard(post, idx) {
 
   let contentHtml = '';
   if (post.tipo === 'Reel') {
-    contentHtml = `
+    const partes = [
+      { label: '🎣 Hook', val: post.hook },
+      { label: '😣 Problema', val: post.problema },
+      { label: '✅ Solución', val: post.solucion },
+      { label: '📣 CTA', val: post.cta },
+    ];
+    const partesHtml = partes.map(p => p.val ? `
       <div class="content-section">
-        <div class="content-label">Guión</div>
-        <div class="content-text">${escHtml(post.guion || '')}</div>
-      </div>`;
+        <div class="content-label">${p.label}</div>
+        <div class="content-text">${escHtml(p.val)}</div>
+      </div>` : '').join('');
+    const guionHtml = post.guion ? `
+      <div class="content-section">
+        <div class="content-label">🎬 Guión completo</div>
+        <div class="content-text">${escHtml(post.guion)}</div>
+      </div>` : '';
+    contentHtml = partesHtml + guionHtml;
   } else {
-    const slides = Array.isArray(post.slides) ? post.slides : [];
-    const slidesHtml = slides.map((s, i) => `
+    const allSlides = [post.portada, ...(Array.isArray(post.slides) ? post.slides : [])].filter(Boolean);
+    const slidesHtml = allSlides.map((s, i) => `
       <div class="slide-item">
         <div class="slide-num">${i + 1}</div>
         <div class="slide-text">${escHtml(s)}</div>
@@ -616,10 +628,10 @@ function renderResults(data) {
     posts.forEach((post, pi) => {
       html += buildPostCard(post, `s${si}p${pi}`);
       if (post.tipo === 'Reel') {
-        fullText += `\nPOST ${pi + 1} (Reel) ${post.dia || ''}\nGuión:\n${post.guion || ''}\n`;
+        fullText += `\nPOST ${pi + 1} (Reel) ${post.dia || ''}\nHook: ${post.hook || ''}\nProblema: ${post.problema || ''}\nSolución: ${post.solucion || ''}\nCTA: ${post.cta || ''}\nGuión:\n${post.guion || ''}\n`;
       } else {
-        const slides = Array.isArray(post.slides) ? post.slides : [];
-        fullText += `\nPOST ${pi + 1} (Carrusel) ${post.dia || ''}\nSlides:\n${slides.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n`;
+        const allSlides = [post.portada, ...(Array.isArray(post.slides) ? post.slides : [])].filter(Boolean);
+        fullText += `\nPOST ${pi + 1} (Carrusel) ${post.dia || ''}\nSlides:\n${allSlides.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n`;
       }
       fullText += `Caption:\n${post.caption || ''}\n\n`;
     });
