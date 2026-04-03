@@ -98,7 +98,7 @@ Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura exacta, sin text
 
 Genera exactamente ${numSemanas} semana(s) con exactamente ${numPosts} post(s) por semana.
 Para posts tipo Reel el campo "slides" no debe existir. Para posts tipo Carrusel el campo "guion" no debe existir.
-NO incluyas nada fuera del JSON.`;
+Responde ÚNICAMENTE con JSON válido, sin texto adicional, sin bloques de código markdown.`;
 
   try {
     const geminiRes = await fetch(
@@ -139,9 +139,20 @@ NO incluyas nada fuera del JSON.`;
     let parsed;
     try {
       parsed = JSON.parse(cleaned);
-    } catch (parseErr) {
-      console.error('JSON parse error:', parseErr, '\nRaw:', cleaned.slice(0, 500));
-      return res.status(502).json({ error: 'La respuesta de Gemini no es JSON válido', raw: cleaned.slice(0, 300) });
+    } catch (firstErr) {
+      // Segundo intento: extraer contenido entre el primer { y el último }
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          parsed = JSON.parse(match[0]);
+        } catch (secondErr) {
+          console.error('JSON parse error (segundo intento):', secondErr, '\nRaw:', cleaned.slice(0, 500));
+          return res.status(502).json({ error: 'La respuesta de Gemini no es JSON válido', raw: cleaned.slice(0, 300) });
+        }
+      } else {
+        console.error('JSON parse error (sin JSON extraíble):', firstErr, '\nRaw:', cleaned.slice(0, 500));
+        return res.status(502).json({ error: 'La respuesta de Gemini no es JSON válido', raw: cleaned.slice(0, 300) });
+      }
     }
 
     return res.status(200).json(parsed);
